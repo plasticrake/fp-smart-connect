@@ -1,7 +1,6 @@
 """Config flow for the Fisher-Price Smart Connect integration."""
 
 import my_pypi_dependency
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_entry_flow
 
@@ -15,4 +14,6 @@ async def _async_has_devices(hass: HomeAssistant) -> bool:
     return len(devices) > 0
 
 
-config_entry_flow.register_discovery_flow(DOMAIN, "Fisher-Price Smart Connect", _async_has_devices)
+config_entry_flow.register_discovery_flow(
+    DOMAIN, "Fisher-Price Smart Connect", _async_has_devices
+)
