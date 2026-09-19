@@ -3,8 +3,15 @@
 target-version = "py314"
 
 [lint]
-select = ["ALL"]
-
+preview = true
+select = [
+    "correctness",
+    "suspicious",
+    "complexity",
+    "performance",
+    "style",
+    "security",
+]
 ignore = [
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
     "D203",   # no-blank-line-before-class (incompatible with formatter)
@@ -21,3 +28,11 @@ keep-runtime-typing = true
 
 [lint.mccabe]
 max-complexity = 25
+
+[lint.per-file-ignores]
+# Tests routinely assert on internals and hardcoded fixture values.
+"tests/*" = [
+    "S101",    # assert
+    "PLR2004", # magic value used in comparison
+    "SLF001",  # private member access (whitebox coordinator/entity tests)
+]

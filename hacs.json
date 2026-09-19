@@ -1,5 +1,5 @@
 {
-	"name": "Fisher-Price Smart Connect",
-	"homeassistant": "2026.8.3",
-	"hacs": "2.0.5"
+  "name": "Fisher-Price Smart Connect",
+  "homeassistant": "2026.9.1",
+  "hacs": "2.0.5"
 }

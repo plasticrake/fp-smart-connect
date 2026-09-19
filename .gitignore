@@ -5,6 +5,10 @@ __pycache__
 */build/*
 */dist/*
 
+# Node (prettier tooling for .md/.toml formatting)
+node_modules/
+
+.venv
 
 # misc
 .coverage
@@ -23,3 +27,6 @@ config/*
 # Windows
 Thumbs.db
 Desktop.ini
+
+# AI
+.claude/*.local.json

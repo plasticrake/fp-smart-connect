@@ -3,6 +3,7 @@ hass
 homeassistant
 homekit
 plasticrake
+pyupgrade
 reauthentication
 ssdp
 websession

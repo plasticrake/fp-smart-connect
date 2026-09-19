@@ -16,12 +16,12 @@
       }
     },
     "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "cannot_connect": "Failed to connect",
       "pairing_failed": "Could not pair with the device. Make sure it is in its hardware pairing mode and try again.",
       "no_devices_found": "No Deluxe Soother was found over Bluetooth. Make sure it is powered on and in its hardware pairing mode, then try again."
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "already_configured": "Device is already configured"
     }
   },
   "entity": {

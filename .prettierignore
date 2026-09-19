@@ -1,0 +1,8 @@
+**/.pytest_cache/
+.devcontainer-lock.json
+.mypy_cache/
+.ruff_cache/
+.venv/
+node_modules/
+pnpm-lock.yaml
+uv.lock

@@ -1,17 +1,20 @@
 {
   "domain": "fp_smart_connect",
   "name": "Fisher-Price Smart Connect",
-  "codeowners": [
-    "@plasticrake"
+  "codeowners": ["@plasticrake"],
+  "bluetooth": [
+    {
+      "service_uuid": "e2bcfff0-39b2-a193-c63c-8ef1bb786d55",
+      "connectable": true
+    }
   ],
   "config_flow": true,
   "dependencies": ["bluetooth_adapters"],
-  "documentation": "https://www.home-assistant.io/integrations/fp_smart_connect",
-  "homekit": {},
+  "documentation": "https://github.com/plasticrake/fp-smart-connect",
+  "issue_tracker": "https://github.com/plasticrake/fp-smart-connect/issues",
+  "loggers": ["fp_soother_lib"],
   "integration_type": "device",
   "iot_class": "local_push",
-  "quality_scale": "bronze",
-  "requirements": [],
-  "ssdp": [],
-  "zeroconf": []
+  "requirements": ["fp-soother-lib>=1.0.0"],
+  "version": "0.1.0"
 }
