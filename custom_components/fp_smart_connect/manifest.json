@@ -16,5 +16,5 @@
   "issue_tracker": "https://github.com/plasticrake/fp-smart-connect/issues",
   "loggers": ["fp_soother_lib"],
   "requirements": ["fp-soother-lib>=1.0.0"],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
