@@ -75,6 +75,9 @@
     "cannot_connect": {
       "message": "Could not connect to the Deluxe Soother at {address}: {error}"
     },
+    "device_not_found": {
+      "message": "Could not find the Deluxe Soother at {address}. Make sure it is powered on and in range of a Bluetooth adapter or proxy"
+    },
     "unknown_effect": {
       "message": "Unknown effect: {effect}"
     },

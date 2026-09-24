@@ -66,7 +66,13 @@ def mock_client() -> Generator[MagicMock]:
     client.is_paired = True
     client.session_key = bytes.fromhex(TEST_SESSION_KEY_HEX)
     client.state = mock_soother_state()
-    with patch("custom_components.fp_smart_connect.SootherClient", return_value=client):
+    with (
+        patch("custom_components.fp_smart_connect.SootherClient", return_value=client),
+        patch(
+            "custom_components.fp_smart_connect.bluetooth.async_ble_device_from_address",
+            return_value=BLEDevice(TEST_ADDRESS, "Deluxe Soother", {}),
+        ),
+    ):
         yield client
 
 

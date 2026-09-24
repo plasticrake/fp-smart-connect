@@ -27,6 +27,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: FpSootherConfigEntry) ->
     address: str = entry.data[CONF_ADDRESS]
     session_key = bytes.fromhex(entry.data[CONF_SESSION_KEY])
 
+    # Bail out before building the client when no connectable adapter or proxy
+    # can see the device. The bluetooth discovery flow reloads the entry as
+    # soon as it advertises again.
+    if not bluetooth.async_ble_device_from_address(hass, address, connectable=True):
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="device_not_found",
+            translation_placeholders={"address": address},
+        )
+
     def _resolve_ble_device() -> BLEDevice:
         device = bluetooth.async_ble_device_from_address(
             hass, address, connectable=True

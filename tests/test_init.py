@@ -48,6 +48,28 @@ async def test_setup_failure_retries(
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
 
 
+async def test_setup_retries_when_device_not_found(
+    hass: HomeAssistant,
+    enable_bluetooth: None,
+    mock_client: MagicMock,
+    mock_config_entry: MockConfigEntry,
+) -> None:
+    """With no BLE route to the device, setup retries without touching the client."""
+    mock_config_entry.add_to_hass(hass)
+    with patch(
+        f"{INIT_MODULE}.bluetooth.async_ble_device_from_address", return_value=None
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+    assert mock_config_entry.reason == (
+        f"Could not find the Deluxe Soother at {TEST_ADDRESS}. Make sure it is "
+        "powered on and in range of a Bluetooth adapter or proxy"
+    )
+    mock_client.open.assert_not_awaited()
+
+
 async def test_setup_passes_stored_credentials(
     hass: HomeAssistant,
     enable_bluetooth: None,
