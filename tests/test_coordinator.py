@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fp_soother_lib import SootherConnectionError
-from homeassistant.config_entries import ConfigEntryState
+import pytest
+from fp_soother_lib import SootherCommandError, SootherConnectionError
 
 from custom_components.fp_smart_connect.const import LOGGER
 from custom_components.fp_smart_connect.coordinator import FpSootherCoordinator
@@ -36,22 +36,6 @@ async def test_async_setup_registers_callbacks_once(
     mock_client.on_state_change.assert_called_once()
     mock_client.on_disconnect.assert_called_once()
     assert coordinator._connection_ready is True
-
-
-async def test_setup_failure_propagates_as_config_entry_not_ready(
-    hass: HomeAssistant,
-    enable_bluetooth: None,
-    mock_client: MagicMock,
-    mock_config_entry: MockConfigEntry,
-) -> None:
-    """A connection failure during setup leaves the entry in SETUP_RETRY."""
-    mock_client.open.side_effect = SootherConnectionError("boom")
-    mock_config_entry.add_to_hass(hass)
-
-    await hass.config_entries.async_setup(mock_config_entry.entry_id)
-    await hass.async_block_till_done()
-
-    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
 
 
 async def test_disconnect_flips_available(
@@ -93,3 +77,47 @@ async def test_needs_poll_reflects_connection_state(
 
     coordinator._connection_ready = False
     assert coordinator._needs_poll(None, None) is True
+
+
+@pytest.mark.parametrize(
+    ("method", "error"),
+    [
+        ("open", SootherConnectionError("boom")),
+        ("refresh_state", SootherConnectionError("boom")),
+        ("refresh_state", SootherCommandError("boom")),
+    ],
+)
+async def test_failed_poll_keeps_needing_reconnect(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    method: str,
+    error: Exception,
+) -> None:
+    """A failed reconnect re-raises and leaves the coordinator wanting another poll."""
+    coordinator = setup_integration.runtime_data
+    mock_client.is_connected = False
+    getattr(mock_client, method).side_effect = error
+
+    with pytest.raises(type(error)):
+        await coordinator._async_poll_soother(None)
+
+    assert coordinator.available is False
+    assert coordinator._needs_poll(None, None) is True
+
+
+async def test_poll_while_connected_only_refreshes(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+) -> None:
+    """A poll with a still-live link refreshes state without reopening."""
+    coordinator = setup_integration.runtime_data
+    mock_client.reset_mock()
+    mock_client.is_connected = True
+
+    await coordinator._async_poll_soother(None)
+
+    mock_client.open.assert_not_awaited()
+    mock_client.refresh_state.assert_awaited_once()
+    assert coordinator.available is True

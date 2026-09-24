@@ -71,3 +71,33 @@ def test_enum_mapping_options_for_includes_fallback_only_when_needed() -> None:
 
     assert mapping.options_for(0) == ["Slow", "Fast"]
     assert mapping.options_for(9) == ["Slow", "Fast", "Speed 9"]
+
+
+@pytest.mark.parametrize("native_max", [7, 15])
+def test_brightness_round_trips_every_native_level(native_max: int) -> None:
+    """Every native level survives a trip through Home Assistant's 0-255 scale."""
+    for level in range(native_max + 1):
+        assert (
+            scale_from_ha_brightness(
+                scale_to_ha_brightness(level, native_max), native_max
+            )
+            == level
+        )
+
+
+def test_volume_round_trips_every_native_level() -> None:
+    """Every native volume level survives a trip through Home Assistant's 0.0-1.0."""
+    for level in range(16):
+        assert volume_from_ha(volume_to_ha(level)) == level
+
+
+def test_out_of_range_values_are_clamped() -> None:
+    """Out-of-range inputs clamp to the valid range instead of overflowing."""
+    assert scale_to_ha_brightness(-1, 7) == 0
+    assert scale_to_ha_brightness(99, 7) == 255
+    assert scale_from_ha_brightness(-5, 7) == 0
+    assert scale_from_ha_brightness(300, 7) == 7
+    assert volume_to_ha(-1) == pytest.approx(0.0)
+    assert volume_to_ha(20) == pytest.approx(1.0)
+    assert volume_from_ha(-0.1) == 0
+    assert volume_from_ha(1.5) == 15

@@ -34,7 +34,9 @@ def mock_soother_state(**overrides: Any) -> SootherState:
     return SootherState(**overrides)
 
 
-def make_discovery_info(address: str = TEST_ADDRESS) -> BluetoothServiceInfoBleak:
+def make_discovery_info(
+    address: str = TEST_ADDRESS, service_uuids: list[str] | None = None
+) -> BluetoothServiceInfoBleak:
     """Build a fake bluetooth discovery info for a Deluxe Soother."""
     device = BLEDevice(address, "Deluxe Soother", {})
     return BluetoothServiceInfoBleak(
@@ -43,7 +45,9 @@ def make_discovery_info(address: str = TEST_ADDRESS) -> BluetoothServiceInfoBlea
         rssi=-60,
         manufacturer_data={},
         service_data={},
-        service_uuids=[SERVICE_UUID.lower()],
+        service_uuids=[SERVICE_UUID.lower()]
+        if service_uuids is None
+        else service_uuids,
         source="local",
         device=device,
         advertisement=None,

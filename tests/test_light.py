@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import call
 
 import pytest
 from homeassistant.exceptions import ServiceValidationError
@@ -229,3 +230,69 @@ async def test_star_projection_bare_turn_on_defaults_when_no_previous_effect(
         "light", "turn_on", {"entity_id": entity_id}, blocking=True
     )
     mock_client.set_star_projection_sequence_mode.assert_awaited_once_with(1)
+
+
+async def test_nightlight_turn_on_with_brightness_from_off(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """turn_on with a brightness while off turns the mode on, then sets brightness."""
+    entity_id = _entity_id_for(entity_registry, "nightlight")
+    mock_client.state.nightlight_mode = 0
+    _refresh(setup_integration)
+    await hass.async_block_till_done()
+    mock_client.reset_mock()
+
+    await hass.services.async_call(
+        "light",
+        "turn_on",
+        {"entity_id": entity_id, "brightness": 255},
+        blocking=True,
+    )
+    assert [c for c in mock_client.mock_calls if c[0].startswith("set_")] == [
+        call.set_nightlight(True),
+        call.set_nightlight_brightness(7),
+    ]
+
+
+async def test_star_projection_turn_on_with_effect_and_brightness(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """turn_on with both an effect and a brightness applies both, effect first."""
+    entity_id = _entity_id_for(entity_registry, "star_projection")
+    mock_client.reset_mock()
+
+    await hass.services.async_call(
+        "light",
+        "turn_on",
+        {"entity_id": entity_id, "effect": "Cool Colors", "brightness": 255},
+        blocking=True,
+    )
+    assert [c for c in mock_client.mock_calls if c[0].startswith("set_")] == [
+        call.set_star_projection_sequence_mode(2),
+        call.set_star_projection_brightness(7),
+    ]
+
+
+async def test_animal_projection_bare_turn_on_resumes_previous_mode(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A bare turn_on while off resumes the animal projection's previous mode."""
+    entity_id = _entity_id_for(entity_registry, "animal_projection")
+    mock_client.state.animal_projection_mode = 0
+    mock_client.state.previous_animal_projection_mode = 3
+    _refresh(setup_integration)
+    await hass.async_block_till_done()
+
+    await hass.services.async_call(
+        "light", "turn_on", {"entity_id": entity_id}, blocking=True
+    )
+    mock_client.set_animal_projection_mode.assert_awaited_once_with(3)

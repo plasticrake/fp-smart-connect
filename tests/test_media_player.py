@@ -208,3 +208,23 @@ async def test_select_source_unknown_source_is_rejected(
             blocking=True,
         )
     mock_client.set_sound_mode.assert_not_called()
+
+
+async def test_pause_while_paused_keeps_last_sound(
+    hass: HomeAssistant,
+    entity_id: str,
+    mock_client: MagicMock,
+) -> None:
+    """A second pause while already paused doesn't forget the sound to resume."""
+    mock_client.state.sound_mode = 4
+    await hass.services.async_call(
+        "media_player", "media_pause", {"entity_id": entity_id}, blocking=True
+    )
+    mock_client.state.sound_mode = 0
+    await hass.services.async_call(
+        "media_player", "media_pause", {"entity_id": entity_id}, blocking=True
+    )
+    await hass.services.async_call(
+        "media_player", "media_play", {"entity_id": entity_id}, blocking=True
+    )
+    mock_client.set_sound_mode.assert_awaited_with(4)
