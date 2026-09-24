@@ -21,7 +21,7 @@ The integration depends on these public library capabilities:
 
 Use one client per config entry. Entity methods must not create their own clients or issue raw protocol commands. The library's internal I/O lock serializes read-modify-write commands when several Home Assistant controls change close together.
 
-Confirmed version floor for publishing `fp-soother-lib` so it installs correctly alongside this integration: Python `>=3.14.7` (`pyproject.toml`'s `requires-python`) and Home Assistant `2026.8.3`+ (`hacs.json`'s `homeassistant` key, `pyproject.toml`'s `homeassistant>=2026.9.1` dev dependency). `manifest.json`'s `requirements` is still `[]` pending a published, version-pinned `fp-soother-lib` release -- that's a separate, still-open packaging step, not a version question.
+Confirmed version floor for publishing `fp-soother-lib` so it installs correctly alongside this integration: Python `>=3.14.2` (`pyproject.toml`'s `requires-python`) and Home Assistant `2026.8.3`+ (`hacs.json`'s `homeassistant` key, `pyproject.toml`'s `homeassistant>=2026.9.1` dev dependency). `manifest.json`'s `requirements` is still `[]` pending a published, version-pinned `fp-soother-lib` release -- that's a separate, still-open packaging step, not a version question.
 
 ### Discovery is the integration's responsibility, not the library's
 
