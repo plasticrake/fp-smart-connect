@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <major|minor|patch|stable|alpha|beta|rc|post|dev>" >&2
+  exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Working tree is not clean; commit or stash changes first." >&2
+  exit 1
+fi
+
+manifest=custom_components/fp_smart_connect/manifest.json
+
+version="$(uv version --bump "$1" --short)"
+
+sed -i -E "s/^(\s*\"version\": )\"[^\"]*\"/\1\"${version}\"/" "$manifest"
+
+if ! grep -q "\"version\": \"${version}\"" "$manifest"; then
+  echo "Failed to update version in $manifest" >&2
+  exit 1
+fi
+
+git add pyproject.toml uv.lock "$manifest"
+git commit -m "chore: release v${version}"
+git tag -s "${version}" -m "v${version}"
+
+echo "Released ${version}. Push with: git push --follow-tags"
