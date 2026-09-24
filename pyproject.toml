@@ -23,4 +23,5 @@ testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.uv]
+exclude-newer = "2 days"
 exclude-newer-package = { fp-soother-lib = false }
