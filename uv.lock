@@ -972,7 +972,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "fp-soother-lib", specifier = ">=1.0.1" }]
+requires-dist = [{ name = "fp-soother-lib", specifier = ">=1.0.2" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -987,16 +987,16 @@ dev = [
 
 [[package]]
 name = "fp-soother-lib"
-version = "1.0.1"
+version = "1.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bleak" },
     { name = "bleak-retry-connector" },
     { name = "cryptography" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/2d/bb14cd99b6f112236e6b55026d4feaab90f15383c6af8e2c839904f51b4f/fp_soother_lib-1.0.1.tar.gz", hash = "sha256:7095921b9c7d183aa429ea32cdb1d1bfacd5736836a7d49d4b8f6d5a832b36d2", size = 25068, upload-time = "2026-09-24T01:57:11.15Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bd/df/4f20defda3f8042e4a318b78230125ea869f2dfc4f1c71f7ee3aa0b79b8f/fp_soother_lib-1.0.2.tar.gz", hash = "sha256:c99f48a772019dd5303b0859cf447b7e36046930b5a346e3292f5987522e13ba", size = 25706, upload-time = "2026-09-24T02:38:17.278Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/45/4691b889600b92595f47af9a239e44c5b2d6dd51010a555844cd59633c65/fp_soother_lib-1.0.1-py3-none-any.whl", hash = "sha256:968c3d5534cee25b39d735317063c951df70796e6f2c3484d7af391449f7832b", size = 30069, upload-time = "2026-09-24T01:57:09.862Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/cb/6194e6e4599aba7c6ceb689c48d8d1eb327728f5cecc1d3e27d71e4e025c/fp_soother_lib-1.0.2-py3-none-any.whl", hash = "sha256:e89f185340b3b9b0470fa2e4552c6bde14a6ab09d0935b8e4e00d9069ae6f2f0", size = 30639, upload-time = "2026-09-24T02:38:15.645Z" },
 ]
 
 [[package]]

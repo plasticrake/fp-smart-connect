@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
+from bleak.exc import BleakError
 from fp_soother_lib import SootherClient, SootherCommandError, SootherConnectionError
 from fp_soother_lib.constants import SERVICE_UUID
 from homeassistant.components.bluetooth import async_discovered_service_info
@@ -24,15 +25,22 @@ async def _async_try_pair(discovery_info: BluetoothServiceInfoBleak) -> str:
 
     Returns the resulting session key, hex-encoded for JSON-serializable
     config-entry storage. Raises SootherConnectionError (device unreachable),
-    SootherCommandError (e.g. the post-pairing clock-sync write failed), or
-    TimeoutError (the device never replied to the key request -- the most
-    likely real-world cause is the device not actually being in pairing mode)
-    on failure.
+    SootherCommandError (a pairing write was rejected, e.g. the device refused
+    the key request), or TimeoutError (the device never replied to the key
+    request) on failure. The latter two most likely mean the device is not
+    actually in pairing mode.
+
+    pair() owns its own connection lifecycle, so no open() beforehand: an
+    extra connection would just be torn down by pair() straight away.
     """
     client = SootherClient(discovery_info.address, ble_device=discovery_info.device)
-    await client.open()
     try:
         await client.pair()
+    except BleakError as exc:
+        # fp-soother-lib lets GATT errors from the key-request write escape
+        # unwrapped (e.g. the device answering with an ATT error).
+        msg = f"Pairing write rejected: {exc}"
+        raise SootherCommandError(msg) from exc
     finally:
         await client.close()
     assert client.session_key is not None

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from bleak.exc import BleakGATTProtocolError, BleakGATTProtocolErrorCode
 from fp_soother_lib import SootherCommandError, SootherConnectionError
 from fp_soother_lib.constants import SERVICE_UUID
 from homeassistant.config_entries import SOURCE_BLUETOOTH, SOURCE_USER
@@ -73,8 +74,7 @@ async def test_bluetooth_discovery_already_configured(
 
 async def test_bluetooth_confirm_cannot_connect(hass: HomeAssistant) -> None:
     """A connection failure during pairing is shown as a retryable form error."""
-    client = _mock_pairing_client()
-    client.open.side_effect = SootherConnectionError("boom")
+    client = _mock_pairing_client(pair_error=SootherConnectionError("boom"))
     with patch(f"{CONFIG_FLOW_MODULE}.SootherClient", return_value=client):
         result = await hass.config_entries.flow.async_init(
             DOMAIN,
@@ -186,22 +186,24 @@ async def test_user_flow_retry_after_no_devices_found(hass: HomeAssistant) -> No
 
 
 @pytest.mark.parametrize(
-    ("client_kwargs", "expected_error"),
+    ("pair_error", "expected_error"),
     [
-        ({"open_error": SootherConnectionError("boom")}, "cannot_connect"),
-        ({"pair_error": SootherCommandError("nope")}, "pairing_failed"),
-        ({"pair_error": TimeoutError()}, "pairing_failed"),
+        (SootherConnectionError("boom"), "cannot_connect"),
+        (SootherCommandError("nope"), "pairing_failed"),
+        (TimeoutError(), "pairing_failed"),
+        (
+            BleakGATTProtocolError(BleakGATTProtocolErrorCode.UNLIKELY_ERROR),
+            "pairing_failed",
+        ),
     ],
 )
 async def test_user_flow_pairing_error_then_recover(
     hass: HomeAssistant,
-    client_kwargs: dict[str, Exception],
+    pair_error: Exception,
     expected_error: str,
 ) -> None:
     """A pairing failure in the user flow re-shows the picker and can be retried."""
-    failing_client = _mock_pairing_client(pair_error=client_kwargs.get("pair_error"))
-    if (open_error := client_kwargs.get("open_error")) is not None:
-        failing_client.open.side_effect = open_error
+    failing_client = _mock_pairing_client(pair_error=pair_error)
     discovery_info = make_discovery_info()
 
     with patch(
