@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 import pytest
@@ -94,13 +95,12 @@ async def test_failed_poll_keeps_needing_reconnect(
     method: str,
     error: Exception,
 ) -> None:
-    """A failed reconnect re-raises and leaves the coordinator wanting another poll."""
+    """A failed reconnect leaves the coordinator wanting another poll."""
     coordinator = setup_integration.runtime_data
     mock_client.is_connected = False
     getattr(mock_client, method).side_effect = error
 
-    with pytest.raises(type(error)):
-        await coordinator._async_poll_soother(None)
+    await coordinator._async_poll_soother(None)
 
     assert coordinator.available is False
     assert coordinator._needs_poll(None, None) is True
@@ -121,3 +121,30 @@ async def test_poll_while_connected_only_refreshes(
     mock_client.open.assert_not_awaited()
     mock_client.refresh_state.assert_awaited_once()
     assert coordinator.available is True
+
+
+async def test_unavailable_and_recovery_logged_once(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An outage logs one unavailable line and one back-online line."""
+    coordinator = setup_integration.runtime_data
+    caplog.set_level(logging.INFO, logger=LOGGER.name)
+
+    coordinator._handle_disconnect()
+    mock_client.is_connected = False
+    mock_client.open.side_effect = SootherConnectionError("boom")
+    await coordinator._async_poll_soother(None)
+    await coordinator._async_poll_soother(None)
+
+    mock_client.open.side_effect = None
+    await coordinator._async_poll_soother(None)
+    await coordinator._async_poll_soother(None)
+
+    messages = [r.getMessage() for r in caplog.records if r.levelno >= logging.INFO]
+    assert messages == [
+        f"{TEST_ADDRESS} is unavailable: disconnected unexpectedly",
+        f"{TEST_ADDRESS} is back online",
+    ]

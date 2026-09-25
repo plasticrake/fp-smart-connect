@@ -24,6 +24,11 @@ connection for its whole lifetime:
   at all) with our own connection-health flag -- without this, a device that
   is still advertising but whose GATT link silently dropped would incorrectly
   report available.
+- Availability transitions are logged once each way (the log-when-unavailable
+  quality-scale rule): one info line when the link is lost or a reconnect
+  first fails, one when a reconnect succeeds. The poll method swallows its
+  own connection errors for this reason -- re-raising would make the base
+  class log a full traceback at ERROR on the first failure.
 """
 
 from __future__ import annotations
@@ -81,6 +86,7 @@ class FpSootherCoordinator(ActiveBluetoothDataUpdateCoordinator[None]):
             name=DEFAULT_NAME,
         )
         self._connection_ready = False
+        self._unavailable_logged = False
 
     async def async_setup(self) -> None:
         """
@@ -108,9 +114,15 @@ class FpSootherCoordinator(ActiveBluetoothDataUpdateCoordinator[None]):
     @callback
     def _handle_disconnect(self) -> None:
         """Handle an unexpected disconnect."""
-        self.logger.warning("%s: disconnected unexpectedly", self.address)
         self._connection_ready = False
+        self._log_unavailable("disconnected unexpectedly")
         self.async_update_listeners()
+
+    def _log_unavailable(self, reason: object) -> None:
+        """Log the device becoming unavailable, once per outage."""
+        if not self._unavailable_logged:
+            self.logger.info("%s is unavailable: %s", self.address, reason)
+            self._unavailable_logged = True
 
     def _needs_poll(
         self,
@@ -128,10 +140,15 @@ class FpSootherCoordinator(ActiveBluetoothDataUpdateCoordinator[None]):
             if not self.client.is_connected:
                 await self.client.open()
             await self.client.refresh_state()
-        except SootherConnectionError, SootherCommandError:
+        except (SootherConnectionError, SootherCommandError) as err:
             self._connection_ready = False
-            raise
+            self.logger.debug("%s: reconnect failed: %s", self.address, err)
+            self._log_unavailable(err)
+            return
         self._connection_ready = True
+        if self._unavailable_logged:
+            self.logger.info("%s is back online", self.address)
+            self._unavailable_logged = False
 
     @property
     def available(self) -> bool:
