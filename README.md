@@ -4,6 +4,10 @@ The **Fisher-Price Smart Connect** integration connects Home Assistant to [Fishe
 
 State updates are pushed over a persistent BLE connection (`local_push`). The integration does not use a cloud account or app pairing beyond the one-time BLE pairing handshake described below.
 
+## Supported Devices
+
+- Deluxe Soother (DYW47) (Tested firmware versions: v8, v11)
+
 ## Prerequisites
 
 - A Home Assistant host with Bluetooth support, using either a local Bluetooth adapter or [Bluetooth proxies](https://www.home-assistant.io/integrations/bluetooth/#remote-adapters-bluetooth-proxies) in range of the device.
