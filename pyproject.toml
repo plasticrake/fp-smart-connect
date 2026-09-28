@@ -4,16 +4,15 @@ version = "0.1.2"
 description = "Fisher-Price Smart Connect integration for Home Assistant"
 readme = "README.md"
 requires-python = ">=3.14.2"
-dependencies = ["fp-soother-lib>=1.0.2"]
+dependencies = ["fp-soother-lib>=1.1.0"]
 
 [dependency-groups]
 dev = [
-    "aiousbwatcher==1.1.2",
-    "dbus-fast",
+    "aiousbwatcher==1.1.2",                            # required by homeassistant testing
     "homeassistant>=2026.9.1",
     "pytest-homeassistant-custom-component==0.13.364",
     "ruff>=0.16.6",
-    "serialx==1.10.0",
+    "serialx==1.10.0",                                 # required by homeassistant testing
     "ty>=0.0.82",
 ]
 
