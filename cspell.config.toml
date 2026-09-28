@@ -1,6 +1,6 @@
 version = "0.2"
 language = "en"
-dictionaries = ["project-words", "python"]
+dictionaries = ["project-words", "bash", "python"]
 
 [[dictionaryDefinitions]]
 name = "project-words"

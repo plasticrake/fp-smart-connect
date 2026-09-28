@@ -59,7 +59,7 @@ def make_discovery_info(
 
 @pytest.fixture
 def mock_client() -> Generator[MagicMock]:
-    """A fully autospecced, mocked SootherClient."""
+    """A fully autospec'd, mocked SootherClient."""
     client = create_autospec(SootherClient, instance=True)
     client.address = TEST_ADDRESS
     client.is_connected = True
