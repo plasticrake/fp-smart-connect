@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fp_soother_lib.constants import SOUND_MODES
 from homeassistant.components.media_player import (
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
@@ -14,7 +13,7 @@ from homeassistant.exceptions import ServiceValidationError
 
 from .const import DOMAIN
 from .entity import FpSootherEntity
-from .mappings import EnumMapping, volume_from_ha, volume_to_ha
+from .mappings import SOUND_MODE_MAP, volume_from_ha, volume_to_ha
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -24,15 +23,6 @@ if TYPE_CHECKING:
 
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
-
-SOUND_MODE_MAP = EnumMapping.from_source(
-    SOUND_MODES,
-    fallback_prefix="Mode",
-    overrides={
-        "its_raining_its_pouring": "It's Raining, It's Pouring",
-        "brahms_lullaby": "Brahms: Lullaby",
-    },
-)
 
 
 async def async_setup_entry(

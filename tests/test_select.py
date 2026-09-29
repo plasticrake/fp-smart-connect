@@ -28,6 +28,24 @@ AUX_TIMER_ATTRS = {
 }
 
 
+# The client method each select delegates to.
+SET_METHODS = {
+    "star_projection_speed": "set_star_projection_speed",
+    "animal_projection_speed": "set_animal_projection_speed",
+    "music_timer": "set_sound_timer",
+    "light_timer": "set_light_timer",
+    "sleep_stages": "set_sleep_stages_mode",
+    "settle_timer": "set_captive_sleep_stage_timer",
+    "soothe_timer": "set_soothe_sleep_stage_timer",
+    "sleep_timer": "set_sleep_stage_timer",
+}
+
+
+def _assert_sent(mock_client: MagicMock, description, raw: int) -> None:
+    """Assert the select sent raw through the right client method."""
+    getattr(mock_client, SET_METHODS[description.key]).assert_awaited_once_with(raw)
+
+
 def _refresh(entry: MockConfigEntry) -> None:
     entry.runtime_data.async_update_listeners()
 
@@ -89,8 +107,7 @@ async def test_select_option_delegation(
         {"entity_id": entity_id, "option": label},
         blocking=True,
     )
-    set_method = getattr(mock_client, description.set_method)
-    set_method.assert_awaited_once_with(raw)
+    _assert_sent(mock_client, description, raw)
 
 
 @pytest.mark.parametrize("description", SELECT_DESCRIPTIONS, ids=lambda d: d.key)
@@ -115,8 +132,7 @@ async def test_reselecting_fallback_option_round_trips(
         {"entity_id": entity_id, "option": fallback_label},
         blocking=True,
     )
-    set_method = getattr(mock_client, description.set_method)
-    set_method.assert_awaited_once_with(unknown_raw)
+    _assert_sent(mock_client, description, unknown_raw)
 
 
 @pytest.mark.parametrize(
@@ -140,3 +156,8 @@ async def test_aux_timer_none_before_first_read(
     assert state is not None
     assert state.state == "unknown"
     assert state.attributes["options"]
+
+
+def test_set_methods_cover_every_select() -> None:
+    """SET_METHODS stays in step with SELECT_DESCRIPTIONS."""
+    assert set(SET_METHODS) == {d.key for d in SELECT_DESCRIPTIONS}
