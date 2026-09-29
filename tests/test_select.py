@@ -8,7 +8,10 @@ import pytest
 from homeassistant.helpers.device_registry import format_mac
 
 from custom_components.fp_smart_connect.const import DOMAIN
-from custom_components.fp_smart_connect.select import SELECT_DESCRIPTIONS
+from custom_components.fp_smart_connect.select import (
+    CUSTOM_COLOR_ATTRS,
+    SELECT_DESCRIPTIONS,
+)
 
 from .conftest import TEST_ADDRESS
 
@@ -28,7 +31,8 @@ AUX_TIMER_ATTRS = {
 }
 
 
-# The client method each select delegates to.
+# The client method each single-value select delegates to. The star color
+# selects share set_star_projection_custom_colors instead; see _assert_sent.
 SET_METHODS = {
     "star_projection_speed": "set_star_projection_speed",
     "animal_projection_speed": "set_animal_projection_speed",
@@ -43,7 +47,12 @@ SET_METHODS = {
 
 def _assert_sent(mock_client: MagicMock, description, raw: int) -> None:
     """Assert the select sent raw through the right client method."""
-    getattr(mock_client, SET_METHODS[description.key]).assert_awaited_once_with(raw)
+    if description.state_attr in CUSTOM_COLOR_ATTRS:
+        colors = [getattr(mock_client.state, attr) for attr in CUSTOM_COLOR_ATTRS]
+        colors[CUSTOM_COLOR_ATTRS.index(description.state_attr)] = raw
+        mock_client.set_star_projection_custom_colors.assert_awaited_once_with(*colors)
+    else:
+        getattr(mock_client, SET_METHODS[description.key]).assert_awaited_once_with(raw)
 
 
 def _refresh(entry: MockConfigEntry) -> None:
@@ -158,6 +167,36 @@ async def test_aux_timer_none_before_first_read(
     assert state.attributes["options"]
 
 
-def test_set_methods_cover_every_select() -> None:
+def test_set_methods_cover_every_single_value_select() -> None:
     """SET_METHODS stays in step with SELECT_DESCRIPTIONS."""
-    assert set(SET_METHODS) == {d.key for d in SELECT_DESCRIPTIONS}
+    assert set(SET_METHODS) == {
+        d.key for d in SELECT_DESCRIPTIONS if d.state_attr not in CUSTOM_COLOR_ATTRS
+    }
+
+
+async def test_star_color_resends_other_slots(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Changing one star color resends the other two slots' live values."""
+    mock_client.state.star_projection_custom_color0 = 1
+    mock_client.state.star_projection_custom_color1 = 2
+    mock_client.state.star_projection_custom_color2 = 3
+    _refresh(setup_integration)
+    await hass.async_block_till_done()
+    entity_id = _entity_id_for(entity_registry, "star_color_2")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == "Orange"
+    assert state.name == "Deluxe Soother Star Color 2"
+
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": entity_id, "option": "Blue"},
+        blocking=True,
+    )
+
+    mock_client.set_star_projection_custom_colors.assert_awaited_once_with(1, 5, 3)
