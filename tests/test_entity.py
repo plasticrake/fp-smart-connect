@@ -92,6 +92,7 @@ async def test_disconnect_makes_entities_unavailable(
         for entry in entity_registry.entities.get_entries_for_config_entry_id(
             setup_integration.entry_id
         )
+        if not entry.disabled
     ]
     assert entity_ids
     for entity_id in entity_ids:

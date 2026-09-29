@@ -69,6 +69,25 @@
       "star_color": {
         "name": "Star Color {slot}"
       }
+    },
+    "sensor": {
+      "firmware_version": {
+        "name": "Firmware Version"
+      },
+      "firmware_api_level": {
+        "name": "Firmware API Level"
+      },
+      "device_error": {
+        "name": "Device Error"
+      }
+    },
+    "binary_sensor": {
+      "sound_expiring": {
+        "name": "Sound Expiring"
+      },
+      "light_expiring": {
+        "name": "Light Expiring"
+      }
     }
   },
   "exceptions": {

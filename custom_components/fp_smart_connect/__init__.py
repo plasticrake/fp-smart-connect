@@ -17,7 +17,13 @@ if TYPE_CHECKING:
     from fp_soother_lib import BLEDevice
     from homeassistant.core import HomeAssistant
 
-_PLATFORMS: list[Platform] = [Platform.MEDIA_PLAYER, Platform.LIGHT, Platform.SELECT]
+_PLATFORMS: list[Platform] = [
+    Platform.BINARY_SENSOR,
+    Platform.LIGHT,
+    Platform.MEDIA_PLAYER,
+    Platform.SELECT,
+    Platform.SENSOR,
+]
 
 type FpSootherConfigEntry = ConfigEntry[FpSootherCoordinator]
 
