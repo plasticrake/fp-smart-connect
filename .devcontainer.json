@@ -81,6 +81,7 @@
       "version": "latest",
       "shellautocompletion": true
     },
+    "ghcr.io/devcontainers/features/github-cli:1.1.3": {},
     "ghcr.io/devcontainer-community/devcontainer-features/ripgrep:1": {},
     // "ghcr.io/devcontainers-extra/features/apt-packages:1": {
     // 	"packages": "ffmpeg,libturbojpeg0,libpcap-dev"
