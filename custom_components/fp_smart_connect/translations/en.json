@@ -65,6 +65,9 @@
       },
       "sleep_timer": {
         "name": "Sleep Timer"
+      },
+      "star_color": {
+        "name": "Star Color {slot}"
       }
     }
   },
