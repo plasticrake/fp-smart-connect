@@ -26,6 +26,10 @@ from fp_soother_lib.constants import (
     TIMER_DURATIONS,
 )
 
+from custom_components.fp_smart_connect.binary_sensor import (
+    BINARY_SENSOR_DESCRIPTIONS,
+    FpSootherBinarySensorDescription,
+)
 from custom_components.fp_smart_connect.light import (
     ANIMAL_PROJECTION,
     LIGHT_DESCRIPTIONS,
@@ -39,6 +43,10 @@ from custom_components.fp_smart_connect.mappings import (
 from custom_components.fp_smart_connect.select import (
     SELECT_DESCRIPTIONS,
     FpSootherSelectDescription,
+)
+from custom_components.fp_smart_connect.sensor import (
+    SENSOR_DESCRIPTIONS,
+    FpSootherSensorDescription,
 )
 
 STATE_FIELDS = {f.name for f in fields(SootherState)}
@@ -68,6 +76,23 @@ async def test_select_description_matches_library(
     client = create_autospec(SootherClient, instance=True)
     client.state = SootherState()
     await description.set_fn(client, 1)
+
+
+@pytest.mark.parametrize("description", SENSOR_DESCRIPTIONS, ids=lambda d: d.key)
+def test_sensor_description_matches_library(
+    description: FpSootherSensorDescription,
+) -> None:
+    """Each sensor reads only real SootherState fields."""
+    state = SootherState()
+    description.value_fn(state)
+
+
+@pytest.mark.parametrize("description", BINARY_SENSOR_DESCRIPTIONS, ids=lambda d: d.key)
+def test_binary_sensor_description_matches_library(
+    description: FpSootherBinarySensorDescription,
+) -> None:
+    """Each binary sensor reads a real SootherState field."""
+    assert description.state_attr in STATE_FIELDS
 
 
 @pytest.mark.parametrize("description", LIGHT_DESCRIPTIONS, ids=lambda d: d.key)
