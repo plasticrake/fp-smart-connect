@@ -35,7 +35,32 @@ Once installed, put the Deluxe Soother into pairing mode. Home Assistant should 
 - **Sound** (media player): play/pause, volume, and the sound as its source.
 - **Night Light**, **Star Projection**, **Animal Projection** (lights): on/off and brightness. The projections expose their modes as effects.
 - **Selects**: Star Projection Speed, Animal Projection Speed, Music Timer, Light Timer, Sleep Stages, Settle Timer, Soothe Timer, Sleep Timer, and Star Color 1-3 (the colors used by the Custom star effect).
+- **Settling Playlist**, **Soothing Playlist** (sensors): the tracks selected in each playlist, also available as a `tracks` list attribute. Change them with the `set_playlist` action.
 - **Diagnostics** (disabled by default): Firmware Version, Firmware API Level, Device Error, Sound Expiring, and Light Expiring.
+
+## Actions
+
+### `fp_smart_connect.set_playlist`
+
+Replaces the tracks selected in one playlist.
+
+| Field       | Description                                                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `device_id` | The Deluxe Soother to control.                                                                                                                                                                                                                    |
+| `playlist`  | `settling` or `soothing`.                                                                                                                                                                                                                         |
+| `tracks`    | One or more tracks, each by name or by track number (1-5) within the playlist. Settling: It's Raining, It's Pouring; Aurora; Six Little Ducks; Frere Jacques; Brahms: Lullaby. Soothing: Somewhere; Daylight; Dreaming Dawn; Motions; Polar Wind. |
+
+Unknown tracks are rejected and nothing is changed.
+
+```yaml
+action: fp_smart_connect.set_playlist
+data:
+  device_id: 0123456789abcdef0123456789abcdef
+  playlist: settling
+  tracks:
+    - Aurora
+    - Six Little Ducks
+```
 
 ## Removal
 
