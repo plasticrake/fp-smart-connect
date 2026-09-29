@@ -31,3 +31,198 @@ set_playlist:
             - Polar Wind
           multiple: true
           custom_value: true
+apply_preset:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: fp_smart_connect
+    play_mode:
+      selector:
+        boolean: {}
+    sound_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Pink Noise
+            - Brown Noise
+            - Womb
+            - Ocean
+            - Nature
+            - Wind
+            - It's Raining, It's Pouring
+            - Aurora
+            - Six Little Ducks
+            - Frere Jacques
+            - "Brahms: Lullaby"
+            - Somewhere
+            - Daylight
+            - Dreaming Dawn
+            - Motions
+            - Polar Wind
+    volume_level:
+      selector:
+        number:
+          min: 0
+          max: 15
+          mode: slider
+    animal_projection_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - "On"
+            - Lighthouse
+            - Candle
+    animal_projection_brightness:
+      selector:
+        number:
+          min: 0
+          max: 15
+          mode: slider
+    animal_projection_speed:
+      selector:
+        select:
+          options:
+            - Slow
+            - Fast
+    star_projection_sequence_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Rainbow
+            - Cool Colors
+            - Warm Colors
+            - Custom
+    star_projection_custom_color0:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Yellow
+            - Green
+            - Blue
+            - Purple
+    star_projection_custom_color1:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Yellow
+            - Green
+            - Blue
+            - Purple
+    star_projection_custom_color2:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Yellow
+            - Green
+            - Blue
+            - Purple
+    star_projection_brightness:
+      selector:
+        number:
+          min: 0
+          max: 7
+          mode: slider
+    star_projection_speed:
+      selector:
+        select:
+          options:
+            - Slow
+            - Normal
+            - Fast
+            - Very Fast
+    nightlight_mode:
+      selector:
+        boolean: {}
+    nightlight_brightness:
+      selector:
+        number:
+          min: 0
+          max: 7
+          mode: slider
+    sleep_stages_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Settle
+            - Soothe
+            - Sleep
+    captive_playlist_selection:
+      selector:
+        select:
+          options:
+            - It's Raining, It's Pouring
+            - Aurora
+            - Six Little Ducks
+            - Frere Jacques
+            - "Brahms: Lullaby"
+          multiple: true
+          custom_value: true
+    soothe_playlist_selection:
+      selector:
+        select:
+          options:
+            - Somewhere
+            - Daylight
+            - Dreaming Dawn
+            - Motions
+            - Polar Wind
+          multiple: true
+          custom_value: true
+    sound_timer_setting:
+      selector:
+        select:
+          options:
+            - 5 Minutes
+            - 10 Minutes
+            - 15 Minutes
+            - 20 Minutes
+            - 25 Minutes
+            - 30 Minutes
+            - 60 Minutes
+            - 90 Minutes
+            - Continuous
+    light_timer:
+      selector:
+        select:
+          options:
+            - 5 Minutes
+            - 10 Minutes
+            - 15 Minutes
+            - 20 Minutes
+            - 25 Minutes
+            - 30 Minutes
+            - 60 Minutes
+            - 90 Minutes
+            - Continuous
+    previous_animal_projection_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - "On"
+            - Lighthouse
+            - Candle
+    previous_star_projection_sequence_mode:
+      selector:
+        select:
+          options:
+            - "Off"
+            - Rainbow
+            - Cool Colors
+            - Warm Colors
+            - Custom

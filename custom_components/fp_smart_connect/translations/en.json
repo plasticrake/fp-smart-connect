@@ -149,6 +149,100 @@
           "description": "The tracks to select, by name or by track number within the playlist (1-5). Unknown tracks are rejected."
         }
       }
+    },
+    "apply_preset": {
+      "name": "Apply preset",
+      "description": "Changes several Deluxe Soother settings at once in a single write. Settings you leave out keep their current values.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "The Deluxe Soother to control."
+        },
+        "play_mode": {
+          "name": "Play mode",
+          "description": "The device's play flag."
+        },
+        "sound_mode": {
+          "name": "Sound",
+          "description": "The sound to play, or Off."
+        },
+        "volume_level": {
+          "name": "Volume",
+          "description": "Volume, from 0 to 15."
+        },
+        "animal_projection_mode": {
+          "name": "Animal projection",
+          "description": "The animal projection effect, or Off."
+        },
+        "animal_projection_brightness": {
+          "name": "Animal projection brightness",
+          "description": "Animal projection brightness, from 0 to 15."
+        },
+        "animal_projection_speed": {
+          "name": "Animal projection speed",
+          "description": "Animal projection speed. Only meaningful for Lighthouse."
+        },
+        "star_projection_sequence_mode": {
+          "name": "Star projection",
+          "description": "The star projection effect, or Off."
+        },
+        "star_projection_custom_color0": {
+          "name": "Star color 1",
+          "description": "The first custom star color."
+        },
+        "star_projection_custom_color1": {
+          "name": "Star color 2",
+          "description": "The second custom star color."
+        },
+        "star_projection_custom_color2": {
+          "name": "Star color 3",
+          "description": "The third custom star color."
+        },
+        "star_projection_brightness": {
+          "name": "Star projection brightness",
+          "description": "Star projection brightness, from 0 to 7."
+        },
+        "star_projection_speed": {
+          "name": "Star projection speed",
+          "description": "Star projection speed."
+        },
+        "nightlight_mode": {
+          "name": "Night light",
+          "description": "Whether the night light is on."
+        },
+        "nightlight_brightness": {
+          "name": "Night light brightness",
+          "description": "Night light brightness, from 0 to 7."
+        },
+        "sleep_stages_mode": {
+          "name": "Sleep stages",
+          "description": "The sleep stage to run."
+        },
+        "captive_playlist_selection": {
+          "name": "Settling playlist",
+          "description": "The settling tracks to select, by name or track number (1-5)."
+        },
+        "soothe_playlist_selection": {
+          "name": "Soothing playlist",
+          "description": "The soothing tracks to select, by name or track number (1-5)."
+        },
+        "sound_timer_setting": {
+          "name": "Music timer",
+          "description": "How long sound plays before turning off."
+        },
+        "light_timer": {
+          "name": "Light timer",
+          "description": "How long the lights stay on before turning off."
+        },
+        "previous_animal_projection_mode": {
+          "name": "Previous animal projection",
+          "description": "The animal projection effect the device restores when turned back on."
+        },
+        "previous_star_projection_sequence_mode": {
+          "name": "Previous star projection",
+          "description": "The star projection effect the device restores when turned back on."
+        }
+      }
     }
   }
 }

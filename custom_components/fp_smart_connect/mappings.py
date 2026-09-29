@@ -130,6 +130,13 @@ class EnumMapping:
             options.append(self.label_for(current_raw))
         return options
 
+    def with_off(self) -> EnumMapping:
+        """Return a copy that also maps "Off" to 0, for modes where 0 is off."""
+        return EnumMapping(
+            label_to_raw={OFF_LABEL: 0, **self.label_to_raw},
+            fallback_prefix=self.fallback_prefix,
+        )
+
 
 class UnknownTracksError(ValueError):
     """Raised when one or more requested playlist tracks are not recognized."""
@@ -222,6 +229,7 @@ class PlaylistMapping:
         return mask
 
 
+OFF_LABEL = "Off"
 NO_TRACKS_LABEL = "No tracks"
 
 # Display labels that plain title-casing of the constants key can't reproduce.
