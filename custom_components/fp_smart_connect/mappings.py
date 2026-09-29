@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from fp_soother_lib.constants import (
     ANIMAL_PROJECTION_MODES,
     ANIMAL_PROJECTION_SPEEDS,
+    CUSTOM_COLORS,
     SLEEP_STAGE_TIMER_DURATIONS,
     SLEEP_STAGES_MODES,
     SLEEP_TIMER_DURATIONS,
@@ -155,3 +156,4 @@ SLEEP_STAGE_TIMER_MAP = EnumMapping.from_source(
 SLEEP_TIMER_MAP = EnumMapping.from_source(
     SLEEP_TIMER_DURATIONS, fallback_prefix="Setting"
 )
+CUSTOM_COLOR_MAP = EnumMapping.from_source(CUSTOM_COLORS, fallback_prefix="Color")

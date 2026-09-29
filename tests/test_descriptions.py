@@ -16,6 +16,7 @@ from fp_soother_lib import SootherClient, SootherState
 from fp_soother_lib.constants import (
     ANIMAL_PROJECTION_MODES,
     ANIMAL_PROJECTION_SPEEDS,
+    CUSTOM_COLORS,
     SLEEP_STAGE_TIMER_DURATIONS,
     SLEEP_STAGES_MODES,
     SLEEP_TIMER_DURATIONS,
@@ -51,6 +52,9 @@ SELECT_SOURCES = {
     "settle_timer": SLEEP_STAGE_TIMER_DURATIONS,
     "soothe_timer": SLEEP_STAGE_TIMER_DURATIONS,
     "sleep_timer": SLEEP_TIMER_DURATIONS,
+    "star_color_1": CUSTOM_COLORS,
+    "star_color_2": CUSTOM_COLORS,
+    "star_color_3": CUSTOM_COLORS,
 }
 
 

@@ -9,6 +9,7 @@ from homeassistant.components.select import SelectEntity, SelectEntityDescriptio
 from .entity import FpSootherEntity
 from .mappings import (
     ANIMAL_PROJECTION_SPEED_MAP,
+    CUSTOM_COLOR_MAP,
     SLEEP_STAGE_TIMER_MAP,
     SLEEP_STAGES_MODE_MAP,
     SLEEP_TIMER_MAP,
@@ -29,19 +30,40 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+CUSTOM_COLOR_ATTRS = (
+    "star_projection_custom_color0",
+    "star_projection_custom_color1",
+    "star_projection_custom_color2",
+)
+
 
 class FpSootherSelectDescription(SelectEntityDescription, frozen_or_thawed=True):
     """
     Describes a Deluxe Soother select entity.
 
-    set_fn is a callable (not a plain method name), like the light
-    descriptions' setters, so a select can wrap a command that takes more
-    than the selected value.
+    set_fn is a callable (not a plain method name) because the custom star
+    colors share one three-argument command rather than one setter each.
     """
 
     state_attr: str
     set_fn: Callable[[SootherClient, int], Awaitable[None]]
     value_map: EnumMapping
+
+
+def _set_custom_color(slot: int) -> Callable[[SootherClient, int], Awaitable[None]]:
+    """
+    Build a setter for one custom star color slot.
+
+    The device sets all three slots in one command, so the other two slots
+    are resent with their current values from the client's live state.
+    """
+
+    def set_color(client: SootherClient, color: int) -> Awaitable[None]:
+        colors = [getattr(client.state, attr) for attr in CUSTOM_COLOR_ATTRS]
+        colors[slot] = color
+        return client.set_star_projection_custom_colors(*colors)
+
+    return set_color
 
 
 SELECT_DESCRIPTIONS: tuple[FpSootherSelectDescription, ...] = (
@@ -100,6 +122,17 @@ SELECT_DESCRIPTIONS: tuple[FpSootherSelectDescription, ...] = (
         state_attr="sleep_stage_timer",
         set_fn=lambda client, raw: client.set_sleep_stage_timer(raw),
         value_map=SLEEP_TIMER_MAP,
+    ),
+    *(
+        FpSootherSelectDescription(
+            key=f"star_color_{slot + 1}",
+            translation_key="star_color",
+            translation_placeholders={"slot": str(slot + 1)},
+            state_attr=attr,
+            set_fn=_set_custom_color(slot),
+            value_map=CUSTOM_COLOR_MAP,
+        )
+        for slot, attr in enumerate(CUSTOM_COLOR_ATTRS)
     ),
 )
 

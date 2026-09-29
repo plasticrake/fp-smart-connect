@@ -30,6 +30,12 @@ State updates are pushed over a persistent BLE connection (`local_push`). The in
 
 Once installed, put the Deluxe Soother into pairing mode. Home Assistant should discover it automatically via Bluetooth and prompt you to set it up; otherwise, go to **Settings → Devices & Services → Add Integration** and search for "Fisher-Price Smart Connect".
 
+## Entities
+
+- **Sound** (media player): play/pause, volume, and the sound as its source.
+- **Night Light**, **Star Projection**, **Animal Projection** (lights): on/off and brightness. The projections expose their modes as effects.
+- **Selects**: Star Projection Speed, Animal Projection Speed, Music Timer, Light Timer, Sleep Stages, Settle Timer, Soothe Timer, Sleep Timer, and Star Color 1-3 (the colors used by the Custom star effect).
+
 ## Removal
 
 Removing this integration follows the standard Home Assistant procedure: go to **Settings → Devices & Services**, find the Fisher-Price Smart Connect integration entry, and select **Delete**. This removes the device and its entities from Home Assistant; no other cleanup is required.
