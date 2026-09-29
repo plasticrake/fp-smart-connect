@@ -9,6 +9,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from fp_soother_lib.constants import (
+    ANIMAL_PROJECTION_MODES,
+    ANIMAL_PROJECTION_SPEEDS,
+    SLEEP_STAGE_TIMER_DURATIONS,
+    SLEEP_STAGES_MODES,
+    SLEEP_TIMER_DURATIONS,
+    SOUND_MODES,
+    STAR_PROJECTION_SEQUENCES,
+    STAR_PROJECTION_SPEEDS,
+    TIMER_DURATIONS,
+)
+
 NIGHTLIGHT_BRIGHTNESS_MAX = 7
 STAR_PROJECTION_BRIGHTNESS_MAX = 7
 ANIMAL_PROJECTION_BRIGHTNESS_MAX = 15
@@ -110,3 +122,36 @@ class EnumMapping:
         if current_raw not in self.raw_to_label:
             options.append(self.label_for(current_raw))
         return options
+
+
+# Display labels that plain title-casing of the constants key can't reproduce.
+TRACK_LABEL_OVERRIDES = {
+    "its_raining_its_pouring": "It's Raining, It's Pouring",
+    "brahms_lullaby": "Brahms: Lullaby",
+}
+
+SOUND_MODE_MAP = EnumMapping.from_source(
+    SOUND_MODES, fallback_prefix="Mode", overrides=TRACK_LABEL_OVERRIDES
+)
+STAR_PROJECTION_EFFECT_MAP = EnumMapping.from_source(
+    STAR_PROJECTION_SEQUENCES, fallback_prefix="Sequence"
+)
+ANIMAL_PROJECTION_EFFECT_MAP = EnumMapping.from_source(
+    ANIMAL_PROJECTION_MODES, fallback_prefix="Mode"
+)
+STAR_PROJECTION_SPEED_MAP = EnumMapping.from_source(
+    STAR_PROJECTION_SPEEDS, fallback_prefix="Speed"
+)
+ANIMAL_PROJECTION_SPEED_MAP = EnumMapping.from_source(
+    ANIMAL_PROJECTION_SPEEDS, fallback_prefix="Speed"
+)
+TIMER_DURATION_MAP = EnumMapping.from_source(TIMER_DURATIONS, fallback_prefix="Setting")
+SLEEP_STAGES_MODE_MAP = EnumMapping.from_source(
+    SLEEP_STAGES_MODES, fallback_prefix="Mode"
+)
+SLEEP_STAGE_TIMER_MAP = EnumMapping.from_source(
+    SLEEP_STAGE_TIMER_DURATIONS, fallback_prefix="Setting"
+)
+SLEEP_TIMER_MAP = EnumMapping.from_source(
+    SLEEP_TIMER_DURATIONS, fallback_prefix="Setting"
+)
