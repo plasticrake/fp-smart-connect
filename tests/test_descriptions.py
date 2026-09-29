@@ -31,8 +31,10 @@ from custom_components.fp_smart_connect.light import (
     STAR_PROJECTION,
     FpSootherLightDescription,
 )
-from custom_components.fp_smart_connect.mappings import EnumMapping
-from custom_components.fp_smart_connect.media_player import SOUND_MODE_MAP
+from custom_components.fp_smart_connect.mappings import (
+    SOUND_MODE_MAP,
+    EnumMapping,
+)
 from custom_components.fp_smart_connect.select import (
     SELECT_DESCRIPTIONS,
     FpSootherSelectDescription,
@@ -53,12 +55,15 @@ SELECT_SOURCES = {
 
 
 @pytest.mark.parametrize("description", SELECT_DESCRIPTIONS, ids=lambda d: d.key)
-def test_select_description_matches_library(
+async def test_select_description_matches_library(
     description: FpSootherSelectDescription,
 ) -> None:
     """Each select reads a real SootherState field and calls a real client method."""
     assert description.state_attr in STATE_FIELDS
-    assert callable(getattr(SootherClient, description.set_method, None))
+
+    client = create_autospec(SootherClient, instance=True)
+    client.state = SootherState()
+    await description.set_fn(client, 1)
 
 
 @pytest.mark.parametrize("description", LIGHT_DESCRIPTIONS, ids=lambda d: d.key)

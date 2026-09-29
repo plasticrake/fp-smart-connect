@@ -41,16 +41,18 @@ from homeassistant.components.bluetooth.active_update_coordinator import (
     ActiveBluetoothDataUpdateCoordinator,
 )
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import (
     CONNECTION_BLUETOOTH,
     DeviceInfo,
     format_mac,
 )
 
-from .const import DEFAULT_NAME, MANUFACTURER, MODEL
+from .const import DEFAULT_NAME, DOMAIN, MANUFACTURER, MODEL
 
 if TYPE_CHECKING:
     import logging
+    from collections.abc import Awaitable
 
     from fp_soother_lib import SootherClient, SootherState
     from homeassistant.components.bluetooth import BluetoothServiceInfoBleak
@@ -105,6 +107,22 @@ class FpSootherCoordinator(ActiveBluetoothDataUpdateCoordinator[None]):
     async def async_shutdown(self) -> None:
         """Close the connection. Not covered by async_start()'s own unsub."""
         await self.client.close()
+
+    async def async_command(
+        self,
+        coro: Awaitable[None],
+        *,
+        translation_key: str = "command_failed",
+    ) -> None:
+        """Run a SootherClient command, translating library errors to HA errors."""
+        try:
+            await coro
+        except (SootherConnectionError, SootherCommandError) as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key=translation_key,
+                translation_placeholders={"error": str(err)},
+            ) from err
 
     @callback
     def _handle_state_change(self, _state: SootherState) -> None:

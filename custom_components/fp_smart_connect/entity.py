@@ -4,14 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fp_soother_lib import SootherCommandError, SootherConnectionError
 from homeassistant.components.bluetooth.passive_update_coordinator import (
     PassiveBluetoothCoordinatorEntity,
 )
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import format_mac
-
-from .const import DOMAIN
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
@@ -44,11 +40,4 @@ class FpSootherEntity(PassiveBluetoothCoordinatorEntity["FpSootherCoordinator"])
         translation_key: str = "command_failed",
     ) -> None:
         """Run a SootherClient command, translating library errors to HA errors."""
-        try:
-            await coro
-        except (SootherConnectionError, SootherCommandError) as err:
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key=translation_key,
-                translation_placeholders={"error": str(err)},
-            ) from err
+        await self.coordinator.async_command(coro, translation_key=translation_key)

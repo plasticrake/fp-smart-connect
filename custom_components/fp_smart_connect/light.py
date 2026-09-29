@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from fp_soother_lib.constants import ANIMAL_PROJECTION_MODES, STAR_PROJECTION_SEQUENCES
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
@@ -19,8 +18,10 @@ from .const import DOMAIN
 from .entity import FpSootherEntity
 from .mappings import (
     ANIMAL_PROJECTION_BRIGHTNESS_MAX,
+    ANIMAL_PROJECTION_EFFECT_MAP,
     NIGHTLIGHT_BRIGHTNESS_MAX,
     STAR_PROJECTION_BRIGHTNESS_MAX,
+    STAR_PROJECTION_EFFECT_MAP,
     EnumMapping,
     scale_from_ha_brightness,
     scale_to_ha_brightness,
@@ -81,9 +82,7 @@ STAR_PROJECTION = FpSootherLightDescription(
     native_max=STAR_PROJECTION_BRIGHTNESS_MAX,
     set_mode=lambda client, mode: client.set_star_projection_sequence_mode(mode),
     set_brightness=lambda client, level: client.set_star_projection_brightness(level),
-    effect_map=EnumMapping.from_source(
-        STAR_PROJECTION_SEQUENCES, fallback_prefix="Sequence"
-    ),
+    effect_map=STAR_PROJECTION_EFFECT_MAP,
     previous_mode_attr="previous_star_projection_sequence_mode",
 )
 
@@ -95,7 +94,7 @@ ANIMAL_PROJECTION = FpSootherLightDescription(
     native_max=ANIMAL_PROJECTION_BRIGHTNESS_MAX,
     set_mode=lambda client, mode: client.set_animal_projection_mode(mode),
     set_brightness=lambda client, level: client.set_animal_projection_brightness(level),
-    effect_map=EnumMapping.from_source(ANIMAL_PROJECTION_MODES, fallback_prefix="Mode"),
+    effect_map=ANIMAL_PROJECTION_EFFECT_MAP,
     previous_mode_attr="previous_animal_projection_mode",
 )
 
