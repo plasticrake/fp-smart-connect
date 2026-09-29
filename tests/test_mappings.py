@@ -106,6 +106,17 @@ def test_out_of_range_values_are_clamped() -> None:
     assert volume_from_ha(1.5) == 15
 
 
+def test_enum_mapping_with_off() -> None:
+    """with_off() adds an "Off" label for 0 without touching the original."""
+    mapping = EnumMapping.from_source({"on": 1}, fallback_prefix="Mode")
+
+    with_off = mapping.with_off()
+
+    assert with_off.label_to_raw == {"Off": 0, "On": 1}
+    assert with_off.label_for(0) == "Off"
+    assert mapping.label_for(0) == "Mode 0"
+
+
 PLAYLIST = PlaylistMapping.from_source(
     {"first": 1, "second": 2, "third": 4}, overrides={"third": "Third!"}
 )

@@ -18,6 +18,7 @@ from fp_soother_lib.constants import (
     ANIMAL_PROJECTION_SPEEDS,
     CAPTIVE_PLAYLIST_TRACKS,
     CUSTOM_COLORS,
+    PRESET_ATTRS,
     SLEEP_STAGE_TIMER_DURATIONS,
     SLEEP_STAGES_MODES,
     SLEEP_TIMER_DURATIONS,
@@ -53,6 +54,7 @@ from custom_components.fp_smart_connect.sensor import (
     SENSOR_DESCRIPTIONS,
     FpSootherSensorDescription,
 )
+from custom_components.fp_smart_connect.services import PRESET_FIELDS
 
 STATE_FIELDS = {f.name for f in fields(SootherState)}
 
@@ -100,6 +102,13 @@ def test_binary_sensor_description_matches_library(
 ) -> None:
     """Each binary sensor reads a real SootherState field."""
     assert description.state_attr in STATE_FIELDS
+
+
+def test_preset_fields_match_library() -> None:
+    """apply_preset exposes exactly the attributes send_preset() bundles."""
+    assert set(PRESET_FIELDS) == {
+        SootherState._ATTR_MAP[wire_name] for wire_name in PRESET_ATTRS
+    }
 
 
 @pytest.mark.parametrize(

@@ -164,6 +164,14 @@ Add `fp_smart_connect.apply_preset`, targeting the device, accepting optional ke
 
 All parameters are optional. Any field the caller omits must be left for the library to fill from its own live state. `send_preset` already does this internally, so the action must not pre-fill omitted fields from a locally cached snapshot. Enum-like fields (modes, speeds, timers, playlist selections) should accept the same human-readable labels used by the corresponding `select`/`light`/`sensor` entities elsewhere in this document, not raw device integers, and validate against the same known-value mappings. Unknown or out-of-range values must be rejected with a clear validation error rather than partially applied, consistent with `set_playlist`.
 
+Value formats, as implemented in `services.py`:
+
+- Mode fields where 0 means off (`sound_mode`, `animal_projection_mode`, `star_projection_sequence_mode`, and the two `previous_*` modes) accept the entity labels plus `Off`.
+- `play_mode` and `nightlight_mode` are booleans.
+- Levels (`volume_level` and the three brightness fields) use the device's native ranges (0-15 or 0-7) rather than Home Assistant's 0-255 or 0.0-1.0 scales, so a preset round-trips exactly.
+- Playlist selections take the same track list as `set_playlist`.
+- At least one field is required.
+
 The three sleep-stage countdown timers (`captive_sleep_stage_timer`, `soothe_sleep_stage_timer`, `sleep_stage_timer`) are not part of `send_preset`'s attribute set and must not be exposed through this action.
 
 ## Pairing and config flow
@@ -213,7 +221,4 @@ If the device cannot be reached, the flow should report a retryable connection e
 ## Resolved questions
 
 1. `set_playlist` is a single unified action taking `device_id`, `playlist` (`settling` or `soothing`), and `tracks`. A track is either its name (matched case-insensitively) or its 1-based track number within the playlist, which selects bit `n - 1` of the mask. At least one track is required. Invalid input fails schema validation (`vol.Invalid`) naming every unknown track and listing the valid choices, so nothing is partially applied.
-
-## Open questions to resolve before implementation
-
-1. Confirm whether `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` should really be exposed as `apply_preset` parameters. `SootherState` documents them as read-only status fields, but `send_preset`'s attribute set (`PRESET_ATTRS`) includes them in the composite write.
+2. `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` are exposed as `apply_preset` parameters, because `send_preset` writes them as part of the composite command. They accept the same effect labels as the matching light, plus `Off`.

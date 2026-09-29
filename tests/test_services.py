@@ -1,4 +1,4 @@
-"""Tests for the set_playlist service action."""
+"""Tests for the set_playlist and apply_preset service actions."""
 
 from __future__ import annotations
 
@@ -15,8 +15,16 @@ from homeassistant.helpers import device_registry as dr
 from custom_components.fp_smart_connect import services
 from custom_components.fp_smart_connect.const import DOMAIN
 from custom_components.fp_smart_connect.mappings import (
+    ANIMAL_PROJECTION_EFFECT_MAP,
+    ANIMAL_PROJECTION_SPEED_MAP,
+    CUSTOM_COLOR_MAP,
     SETTLING_PLAYLIST_MAP,
+    SLEEP_STAGES_MODE_MAP,
     SOOTHING_PLAYLIST_MAP,
+    SOUND_MODE_MAP,
+    STAR_PROJECTION_EFFECT_MAP,
+    STAR_PROJECTION_SPEED_MAP,
+    TIMER_DURATION_MAP,
 )
 
 from .conftest import TEST_ADDRESS
@@ -177,3 +185,103 @@ def test_services_yaml_playlist_tracks_cover_both_playlists() -> None:
         *SOOTHING_PLAYLIST_MAP.label_to_bit,
     ]
     assert _yaml_options("set_playlist", "playlist") == list(services.PLAYLISTS)
+
+
+async def test_apply_preset(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+) -> None:
+    """Labels resolve to raw values, and only the given fields are sent."""
+    await _call(
+        hass,
+        "apply_preset",
+        {
+            "sound_mode": "Ocean",
+            "volume_level": 8,
+            "nightlight_mode": True,
+            "star_projection_sequence_mode": "Off",
+            "star_projection_custom_color1": "Blue",
+            "captive_playlist_selection": ["Aurora", 1],
+            "light_timer": "Continuous",
+        },
+    )
+
+    mock_client.send_preset.assert_awaited_once_with(
+        sound_mode=4,
+        volume_level=8,
+        nightlight_mode=1,
+        star_projection_sequence_mode=0,
+        star_projection_custom_color1=5,
+        captive_playlist_selection=0b00011,
+        light_timer=15,
+    )
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        {},
+        {"sound_mode": "Mode 20"},
+        {"sound_mode": 4},
+        {"volume_level": 16},
+        {"nightlight_brightness": -1},
+        {"animal_projection_speed": "Very Fast"},
+        {"soothe_playlist_selection": ["Aurora"]},
+        {"captive_sleep_stage_timer": "5 Minutes"},
+    ],
+)
+async def test_apply_preset_rejects_invalid_data(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    data: dict[str, Any],
+) -> None:
+    """Missing, unknown, or out-of-range fields are rejected, and nothing is sent."""
+    with pytest.raises(vol.Invalid):
+        await _call(hass, "apply_preset", data)
+
+    mock_client.send_preset.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    ("field", "expected"),
+    [
+        ("sound_mode", list(SOUND_MODE_MAP.with_off().label_to_raw)),
+        (
+            "animal_projection_mode",
+            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+        ),
+        ("animal_projection_speed", list(ANIMAL_PROJECTION_SPEED_MAP.label_to_raw)),
+        (
+            "star_projection_sequence_mode",
+            list(STAR_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+        ),
+        ("star_projection_custom_color0", list(CUSTOM_COLOR_MAP.label_to_raw)),
+        ("star_projection_custom_color1", list(CUSTOM_COLOR_MAP.label_to_raw)),
+        ("star_projection_custom_color2", list(CUSTOM_COLOR_MAP.label_to_raw)),
+        ("star_projection_speed", list(STAR_PROJECTION_SPEED_MAP.label_to_raw)),
+        ("sleep_stages_mode", list(SLEEP_STAGES_MODE_MAP.label_to_raw)),
+        ("captive_playlist_selection", list(SETTLING_PLAYLIST_MAP.label_to_bit)),
+        ("soothe_playlist_selection", list(SOOTHING_PLAYLIST_MAP.label_to_bit)),
+        ("sound_timer_setting", list(TIMER_DURATION_MAP.label_to_raw)),
+        ("light_timer", list(TIMER_DURATION_MAP.label_to_raw)),
+        (
+            "previous_animal_projection_mode",
+            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+        ),
+        (
+            "previous_star_projection_sequence_mode",
+            list(STAR_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+        ),
+    ],
+)
+def test_services_yaml_options_match_mappings(field: str, expected: list[str]) -> None:
+    """The UI's option lists match the labels the schema accepts."""
+    assert _yaml_options("apply_preset", field) == expected
+
+
+def test_services_yaml_declares_every_preset_field() -> None:
+    """services.yaml and the apply_preset schema declare the same fields."""
+    fields = yaml.safe_load(SERVICES_YAML)["apply_preset"]["fields"]
+    assert set(fields) == {"device_id", *services.PRESET_FIELDS}

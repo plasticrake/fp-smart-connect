@@ -6,7 +6,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 A Home Assistant custom integration (HACS-distributable) for Fisher-Price Smart Connect devices, currently targeting only the Deluxe Soother (DYW47). All BLE protocol handling (encryption, packet construction, bit-field decoding, connection management) lives in the external `fp-soother-lib` package. This repo contains only the Home Assistant integration layer and must not duplicate that logic.
 
-**Current state:** the `integration_blueprint` scaffold has been replaced with a real implementation: `coordinator.py`, `entity.py`, `light.py`, `media_player.py`, `select.py`, and `mappings.py` exist alongside `__init__.py` and `config_flow.py`, and `tests/` covers all of them. [DESIGN.md](DESIGN.md) remains the authoritative spec for the entity/action model. Read it before changing entity, action, or config-flow behavior, and keep it in sync when `fp-soother-lib`'s public API changes.
+**Current state:** the `integration_blueprint` scaffold has been replaced with a real implementation: `coordinator.py`, `entity.py`, `binary_sensor.py`, `light.py`, `media_player.py`, `select.py`, `sensor.py`, `services.py` (the `set_playlist` and `apply_preset` actions), and `mappings.py` exist alongside `__init__.py` and `config_flow.py`, and `tests/` covers all of them. Phases 1 and 2 of DESIGN.md are implemented. The label mappings shared by entities and actions live in `mappings.py`, and the option lists in `services.yaml` must match them (`tests/test_services.py` checks this). [DESIGN.md](DESIGN.md) remains the authoritative spec for the entity/action model. Read it before changing entity, action, or config-flow behavior, and keep it in sync when `fp-soother-lib`'s public API changes.
 
 ## Agent memory
 
@@ -17,7 +17,7 @@ Repository memory is not shared between AI agents. When verified project facts a
 - `scripts/setup` — `uv sync` the Python environment (also runs automatically as the devcontainer's `postCreateCommand`).
 - `scripts/lint` — `uv run ruff format .` then `uv run ruff check . --fix`. Run this before considering any Python change done.
 - `scripts/develop` — runs a local Home Assistant instance against `config/`, with `custom_components/` on `PYTHONPATH` so the integration loads without symlinks. First run bootstraps `config/` via `hass --script ensure_config`.
-- `uv run pytest` — runs the test suite in `tests/` (config flow, coordinator, light, media player, select, and mappings). Run this before considering any Python change done, alongside `scripts/lint`.
+- `uv run pytest` — runs the test suite in `tests/` (config flow, coordinator, every entity platform, service actions, and mappings). Run this before considering any Python change done, alongside `scripts/lint`.
 - `uv run ty check` — type-checks the project. CI runs it alongside ruff and pytest, so it must pass too.
 
 ## Architecture notes
