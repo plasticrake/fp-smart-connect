@@ -210,7 +210,10 @@ If the device cannot be reached, the flow should report a retryable connection e
 - Add presets only after the library supports the device's actual preset commands and state.
 - Add firmware/update controls only if the library exposes a safe, supported update API. The integration should not expose raw OTA characteristics.
 
+## Resolved questions
+
+1. `set_playlist` is a single unified action taking `device_id`, `playlist` (`settling` or `soothing`), and `tracks`. A track is either its name (matched case-insensitively) or its 1-based track number within the playlist, which selects bit `n - 1` of the mask. At least one track is required. Invalid input fails schema validation (`vol.Invalid`) naming every unknown track and listing the valid choices, so nothing is partially applied.
+
 ## Open questions to resolve before implementation
 
-1. Confirm the exact schema for the `set_playlist` action (single unified service vs. one per playlist, and how invalid track names should be reported) before implementation.
-2. Confirm whether `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` should really be exposed as `apply_preset` parameters. `SootherState` documents them as read-only status fields, but `send_preset`'s attribute set (`PRESET_ATTRS`) includes them in the composite write.
+1. Confirm whether `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` should really be exposed as `apply_preset` parameters. `SootherState` documents them as read-only status fields, but `send_preset`'s attribute set (`PRESET_ATTRS`) includes them in the composite write.
