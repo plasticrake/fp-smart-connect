@@ -1,0 +1,33 @@
+set_playlist:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: fp_smart_connect
+    playlist:
+      required: true
+      selector:
+        select:
+          options:
+            - settling
+            - soothing
+          translation_key: playlist
+    tracks:
+      required: true
+      example: '["Aurora", "Six Little Ducks"]'
+      selector:
+        select:
+          options:
+            - It's Raining, It's Pouring
+            - Aurora
+            - Six Little Ducks
+            - Frere Jacques
+            - "Brahms: Lullaby"
+            - Somewhere
+            - Daylight
+            - Dreaming Dawn
+            - Motions
+            - Polar Wind
+          multiple: true
+          custom_value: true

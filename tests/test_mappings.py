@@ -5,7 +5,10 @@ from __future__ import annotations
 import pytest
 
 from custom_components.fp_smart_connect.mappings import (
+    SETTLING_PLAYLIST_MAP,
     EnumMapping,
+    PlaylistMapping,
+    UnknownTracksError,
     scale_from_ha_brightness,
     scale_to_ha_brightness,
     volume_from_ha,
@@ -101,3 +104,64 @@ def test_out_of_range_values_are_clamped() -> None:
     assert volume_to_ha(20) == pytest.approx(1.0)
     assert volume_from_ha(-0.1) == 0
     assert volume_from_ha(1.5) == 15
+
+
+PLAYLIST = PlaylistMapping.from_source(
+    {"first": 1, "second": 2, "third": 4}, overrides={"third": "Third!"}
+)
+
+
+@pytest.mark.parametrize(
+    ("mask", "expected"),
+    [
+        (0, []),
+        (0b001, ["First"]),
+        (0b101, ["First", "Third!"]),
+        (0b111, ["First", "Second", "Third!"]),
+        (0b1010, ["Second", "Track 4"]),
+    ],
+)
+def test_playlist_labels_for(mask: int, expected: list[str]) -> None:
+    """Set bits map to track labels in bit order; unknown bits get a fallback."""
+    assert PLAYLIST.labels_for(mask) == expected
+
+
+@pytest.mark.parametrize(
+    ("track", "expected"),
+    [
+        ("First", 1),
+        ("third!", 4),
+        ("  SECOND ", 2),
+        (1, 1),
+        (3, 4),
+        ("2", 2),
+        (0, None),
+        (4, None),
+        ("Track 4", None),
+        ("nonsense", None),
+    ],
+)
+def test_playlist_bit_for(track: str | int, expected: int | None) -> None:
+    """Tracks resolve by case-insensitive name or 1-based index."""
+    assert PLAYLIST.bit_for(track) == expected
+
+
+def test_playlist_mask_for() -> None:
+    """Names and indexes combine into one mask; duplicates are harmless."""
+    assert PLAYLIST.mask_for(["First", 3, "first"]) == 0b101
+
+
+def test_playlist_mask_for_rejects_every_unknown_track() -> None:
+    """Every unknown track is reported, and nothing is partially resolved."""
+    with pytest.raises(UnknownTracksError) as exc_info:
+        PLAYLIST.mask_for(["First", "Nope", 9])
+
+    assert exc_info.value.tracks == ["Nope", "9"]
+
+
+def test_settling_playlist_labels_match_sound_labels() -> None:
+    """Settling track names share the sound source's punctuation overrides."""
+    assert SETTLING_PLAYLIST_MAP.labels_for(0b10001) == [
+        "It's Raining, It's Pouring",
+        "Brahms: Lullaby",
+    ]

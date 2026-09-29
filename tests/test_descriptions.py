@@ -16,10 +16,12 @@ from fp_soother_lib import SootherClient, SootherState
 from fp_soother_lib.constants import (
     ANIMAL_PROJECTION_MODES,
     ANIMAL_PROJECTION_SPEEDS,
+    CAPTIVE_PLAYLIST_TRACKS,
     CUSTOM_COLORS,
     SLEEP_STAGE_TIMER_DURATIONS,
     SLEEP_STAGES_MODES,
     SLEEP_TIMER_DURATIONS,
+    SOOTHE_PLAYLIST_TRACKS,
     SOUND_MODES,
     STAR_PROJECTION_SEQUENCES,
     STAR_PROJECTION_SPEEDS,
@@ -37,8 +39,11 @@ from custom_components.fp_smart_connect.light import (
     FpSootherLightDescription,
 )
 from custom_components.fp_smart_connect.mappings import (
+    SETTLING_PLAYLIST_MAP,
+    SOOTHING_PLAYLIST_MAP,
     SOUND_MODE_MAP,
     EnumMapping,
+    PlaylistMapping,
 )
 from custom_components.fp_smart_connect.select import (
     SELECT_DESCRIPTIONS,
@@ -85,6 +90,8 @@ def test_sensor_description_matches_library(
     """Each sensor reads only real SootherState fields."""
     state = SootherState()
     description.value_fn(state)
+    if description.attributes_fn is not None:
+        description.attributes_fn(state)
 
 
 @pytest.mark.parametrize("description", BINARY_SENSOR_DESCRIPTIONS, ids=lambda d: d.key)
@@ -93,6 +100,21 @@ def test_binary_sensor_description_matches_library(
 ) -> None:
     """Each binary sensor reads a real SootherState field."""
     assert description.state_attr in STATE_FIELDS
+
+
+@pytest.mark.parametrize(
+    ("mapping", "source"),
+    [
+        pytest.param(SETTLING_PLAYLIST_MAP, CAPTIVE_PLAYLIST_TRACKS, id="settling"),
+        pytest.param(SOOTHING_PLAYLIST_MAP, SOOTHE_PLAYLIST_TRACKS, id="soothing"),
+    ],
+)
+def test_playlist_mapping_is_lossless(
+    mapping: PlaylistMapping, source: dict[str, int]
+) -> None:
+    """Every library track keeps its own label and bit."""
+    assert len(mapping.label_to_bit) == len(source)
+    assert set(mapping.bit_to_label) == set(source.values())
 
 
 @pytest.mark.parametrize("description", LIGHT_DESCRIPTIONS, ids=lambda d: d.key)

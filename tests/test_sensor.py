@@ -38,6 +38,56 @@ def _entity_id_for(entity_registry: er.EntityRegistry, key: str) -> str:
     return result
 
 
+@pytest.mark.parametrize(
+    ("key", "state_attr", "mask", "expected_state", "expected_tracks"),
+    [
+        (
+            "settling_playlist",
+            "captive_playlist_selection",
+            0b10011,
+            "It's Raining, It's Pouring, Aurora, Brahms: Lullaby",
+            ["It's Raining, It's Pouring", "Aurora", "Brahms: Lullaby"],
+        ),
+        (
+            "soothing_playlist",
+            "soothe_playlist_selection",
+            0b00110,
+            "Daylight, Dreaming Dawn",
+            ["Daylight", "Dreaming Dawn"],
+        ),
+        ("soothing_playlist", "soothe_playlist_selection", 0, "No tracks", []),
+        (
+            "soothing_playlist",
+            "soothe_playlist_selection",
+            0b100001,
+            "Somewhere, Track 6",
+            ["Somewhere", "Track 6"],
+        ),
+    ],
+)
+async def test_playlist_sensor(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+    key: str,
+    state_attr: str,
+    mask: int,
+    expected_state: str,
+    expected_tracks: list[str],
+) -> None:
+    """Playlist sensors decode the bitmask into track names."""
+    entity_id = _entity_id_for(entity_registry, key)
+    setattr(mock_client.state, state_attr, mask)
+    _refresh(setup_integration)
+    await hass.async_block_till_done()
+
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == expected_state
+    assert state.attributes["tracks"] == expected_tracks
+
+
 @pytest.mark.parametrize(("key", "state_attr", "value"), DIAGNOSTIC_SENSORS)
 async def test_diagnostic_sensors_disabled_by_default(
     hass: HomeAssistant,

@@ -9,13 +9,16 @@ from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ADDRESS, Platform
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as cv
 
 from .const import CONF_SESSION_KEY, DOMAIN, LOGGER
 from .coordinator import FpSootherCoordinator
+from .services import async_setup_services
 
 if TYPE_CHECKING:
     from fp_soother_lib import BLEDevice
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.typing import ConfigType
 
 _PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -25,7 +28,15 @@ _PLATFORMS: list[Platform] = [
     Platform.SENSOR,
 ]
 
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
 type FpSootherConfigEntry = ConfigEntry[FpSootherCoordinator]
+
+
+async def async_setup(hass: HomeAssistant, _config: ConfigType) -> bool:
+    """Register the integration's service actions."""
+    async_setup_services(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: FpSootherConfigEntry) -> bool:

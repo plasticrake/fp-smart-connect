@@ -71,6 +71,22 @@
       }
     },
     "sensor": {
+      "settling_playlist": {
+        "name": "Settling Playlist",
+        "state_attributes": {
+          "tracks": {
+            "name": "Tracks"
+          }
+        }
+      },
+      "soothing_playlist": {
+        "name": "Soothing Playlist",
+        "state_attributes": {
+          "tracks": {
+            "name": "Tracks"
+          }
+        }
+      },
       "firmware_version": {
         "name": "Firmware Version"
       },
@@ -105,6 +121,34 @@
     },
     "unknown_source": {
       "message": "Unknown source: {source}"
+    }
+  },
+  "selector": {
+    "playlist": {
+      "options": {
+        "settling": "Settling",
+        "soothing": "Soothing"
+      }
+    }
+  },
+  "services": {
+    "set_playlist": {
+      "name": "Set playlist",
+      "description": "Replaces the tracks selected in a Deluxe Soother playlist.",
+      "fields": {
+        "device_id": {
+          "name": "Device",
+          "description": "The Deluxe Soother to control."
+        },
+        "playlist": {
+          "name": "Playlist",
+          "description": "The playlist to change."
+        },
+        "tracks": {
+          "name": "Tracks",
+          "description": "The tracks to select, by name or by track number within the playlist (1-5). Unknown tracks are rejected."
+        }
+      }
     }
   }
 }

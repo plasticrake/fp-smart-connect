@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import EntityCategory
 
 from .entity import FpSootherEntity
+from .mappings import (
+    NO_TRACKS_LABEL,
+    SETTLING_PLAYLIST_MAP,
+    SOOTHING_PLAYLIST_MAP,
+    PlaylistMapping,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -22,14 +28,46 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+ATTR_TRACKS = "tracks"
+
 
 class FpSootherSensorDescription(SensorEntityDescription, frozen_or_thawed=True):
     """Describes a Deluxe Soother sensor entity."""
 
     value_fn: Callable[[SootherState], StateType]
+    attributes_fn: Callable[[SootherState], dict[str, Any]] | None = None
+
+
+def _playlist_description(
+    key: str, state_attr: str, playlist: PlaylistMapping
+) -> FpSootherSensorDescription:
+    """
+    Describe a read-only playlist sensor.
+
+    The state is the selected track names joined with ", ", which can be
+    ambiguous for names that contain a comma, so the same names are also
+    exposed as a list attribute.
+    """
+    return FpSootherSensorDescription(
+        key=key,
+        translation_key=key,
+        value_fn=lambda state: (
+            ", ".join(playlist.labels_for(getattr(state, state_attr)))
+            or NO_TRACKS_LABEL
+        ),
+        attributes_fn=lambda state: {
+            ATTR_TRACKS: playlist.labels_for(getattr(state, state_attr))
+        },
+    )
 
 
 SENSOR_DESCRIPTIONS: tuple[FpSootherSensorDescription, ...] = (
+    _playlist_description(
+        "settling_playlist", "captive_playlist_selection", SETTLING_PLAYLIST_MAP
+    ),
+    _playlist_description(
+        "soothing_playlist", "soothe_playlist_selection", SOOTHING_PLAYLIST_MAP
+    ),
     FpSootherSensorDescription(
         key="firmware_version",
         translation_key="firmware_version",
@@ -82,3 +120,10 @@ class FpSootherSensor(FpSootherEntity, SensorEntity):
     def native_value(self) -> StateType:
         """Return the sensor's value, or None if not yet known."""
         return self.entity_description.value_fn(self._state)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return any extra state attributes."""
+        if self.entity_description.attributes_fn is None:
+            return None
+        return self.entity_description.attributes_fn(self._state)
