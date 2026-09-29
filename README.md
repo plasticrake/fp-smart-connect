@@ -35,6 +35,7 @@ Once installed, put the Deluxe Soother into pairing mode. Home Assistant should 
 - **Sound** (media player): play/pause, volume, and the sound as its source.
 - **Night Light**, **Star Projection**, **Animal Projection** (lights): on/off and brightness. The projections expose their modes as effects.
 - **Selects**: Star Projection Speed, Animal Projection Speed, Music Timer, Light Timer, Sleep Stages, Settle Timer, Soothe Timer, Sleep Timer, and Star Color 1-3 (the colors used by the Custom star effect).
+- **Diagnostics** (disabled by default): Firmware Version, Firmware API Level, Device Error, Sound Expiring, and Light Expiring.
 
 ## Removal
 
