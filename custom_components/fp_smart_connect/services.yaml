@@ -134,7 +134,7 @@ apply_preset:
       selector:
         number:
           min: 0
-          max: 7
+          max: 6
           mode: slider
     star_projection_speed:
       selector:

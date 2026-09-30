@@ -275,7 +275,7 @@ async def test_star_projection_turn_on_with_effect_and_brightness(
     )
     assert [c for c in mock_client.mock_calls if c[0].startswith("set_")] == [
         call.set_star_projection_sequence_mode(2),
-        call.set_star_projection_brightness(7),
+        call.set_star_projection_brightness(6),
     ]
 
 
