@@ -176,7 +176,7 @@
         },
         "animal_projection_brightness": {
           "name": "Animal projection brightness",
-          "description": "Animal projection brightness, from 0 to 15."
+          "description": "Animal projection brightness, from 0 to 10."
         },
         "animal_projection_speed": {
           "name": "Animal projection speed",

@@ -80,7 +80,7 @@ apply_preset:
       selector:
         number:
           min: 0
-          max: 15
+          max: 10
           mode: slider
     animal_projection_speed:
       selector:
