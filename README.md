@@ -64,7 +64,7 @@ data:
 
 ### `fp_smart_connect.apply_preset`
 
-Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same labels as the entities above (modes also accept `Off`). Brightness and volume use the device's native ranges: `volume_level` and `animal_projection_brightness` are 0-15, and `star_projection_brightness` and `nightlight_brightness` are 0-7. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
+Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same labels as the entities above (modes also accept `Off`). Brightness and volume use the device's native ranges: `volume_level` and `animal_projection_brightness` are 0-15, `nightlight_brightness` is 0-7, and `star_projection_brightness` is 0-6. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
 
 ```yaml
 action: fp_smart_connect.apply_preset

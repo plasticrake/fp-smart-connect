@@ -200,7 +200,7 @@
         },
         "star_projection_brightness": {
           "name": "Star projection brightness",
-          "description": "Star projection brightness, from 0 to 7."
+          "description": "Star projection brightness, from 0 to 6."
         },
         "star_projection_speed": {
           "name": "Star projection speed",
