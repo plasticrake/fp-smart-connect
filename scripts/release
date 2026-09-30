@@ -27,6 +27,6 @@ fi
 
 git add pyproject.toml uv.lock "$manifest"
 git commit -m "chore: release v${version}"
-git tag -s "${version}" -m "v${version}"
+git tag -s "v${version}" -m "v${version}"
 
-echo "Released ${version}. Push with: git push --follow-tags"
+echo "Released v${version}. Push with: git push --follow-tags"
