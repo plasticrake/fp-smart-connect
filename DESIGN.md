@@ -171,7 +171,7 @@ Value formats, as implemented in `services.py`:
 
 - Mode fields where 0 means off (`sound_mode`, `animal_projection_mode`, `star_projection_sequence_mode`, and the two `previous_*` modes) accept the entity labels plus `Off`.
 - `play_mode` and `nightlight_mode` are booleans.
-- Levels (`volume_level` and the three brightness fields) use the device's native ranges (0-15, 0-7, or 0-6) instead of Home Assistant's 0-255 or 0.0-1.0 scales, so a preset round-trips exactly.
+- Levels (`volume_level` and the three brightness fields) use the device's native ranges (0-15, 0-10, 0-7, or 0-6) instead of Home Assistant's 0-255 or 0.0-1.0 scales, so a preset round-trips exactly.
 - Playlist selections take the same track list as `set_playlist`.
 - Every parameter is optional, but at least one field is required.
 
