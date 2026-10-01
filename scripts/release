@@ -4,8 +4,9 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <major|minor|patch|stable|alpha|beta|rc|post|dev>" >&2
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <major|minor|patch|stable|alpha|beta|rc|post|dev>..." >&2
+  echo "Combine bumps for a pre-release, e.g. $0 minor alpha" >&2
   exit 1
 fi
 
@@ -16,7 +17,12 @@ fi
 
 manifest=custom_components/fp_smart_connect/manifest.json
 
-version="$(uv version --bump "$1" --short)"
+bumps=()
+for bump in "$@"; do
+  bumps+=(--bump "$bump")
+done
+
+version="$(uv version "${bumps[@]}" --short)"
 
 sed -i -E "s/^(\s*\"version\": )\"[^\"]*\"/\1\"${version}\"/" "$manifest"
 
