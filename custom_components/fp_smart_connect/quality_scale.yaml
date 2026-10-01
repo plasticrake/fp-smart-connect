@@ -1,11 +1,7 @@
 # https://developers.home-assistant.io/docs/core/integration-quality-scale/
 rules:
   # Bronze
-  action-setup:
-    status: done
-    comment: |
-      set_playlist and apply_preset are registered in async_setup
-      (services.py), not per config entry.
+  action-setup: done
   appropriate-polling:
     status: exempt
     comment: |
@@ -15,7 +11,7 @@ rules:
       poll_method is only used to reconnect the GATT link when it has
       dropped (needs_poll returns True iff the connection isn't live), not
       to poll device state on a fixed interval.
-  brands: todo
+  brands: done
   common-modules: done
   config-flow-test-coverage: done
   config-flow: done
