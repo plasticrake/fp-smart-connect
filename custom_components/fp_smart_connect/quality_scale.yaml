@@ -36,8 +36,13 @@ rules:
   entity-unavailable: done
   integration-owner: done
   log-when-unavailable: done
-  parallel-updates: todo
-  reauthentication-flow: todo
+  parallel-updates:
+    status: done
+    comment: |
+      Every platform sets PARALLEL_UPDATES = 0. Read-only platforms are fed by
+      the coordinator, and fp-soother-lib serializes commands per device under
+      its own I/O lock, so a platform-wide limit would only delay writes to
+      other soothers.
   test-coverage: done
 
   # Gold

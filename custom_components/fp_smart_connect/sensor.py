@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+PARALLEL_UPDATES = 0
+
 ATTR_TRACKS = "tracks"
 
 

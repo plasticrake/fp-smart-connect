@@ -39,6 +39,8 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+PARALLEL_UPDATES = 0
+
 DEFAULT_MODE = 1
 
 
