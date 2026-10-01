@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+PARALLEL_UPDATES = 0
+
 
 class FpSootherBinarySensorDescription(
     BinarySensorEntityDescription, frozen_or_thawed=True

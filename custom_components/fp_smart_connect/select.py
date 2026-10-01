@@ -30,6 +30,8 @@ if TYPE_CHECKING:
     from . import FpSootherConfigEntry
     from .coordinator import FpSootherCoordinator
 
+PARALLEL_UPDATES = 0
+
 CUSTOM_COLOR_ATTRS = (
     "star_projection_custom_color0",
     "star_projection_custom_color1",
