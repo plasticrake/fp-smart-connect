@@ -63,7 +63,7 @@ rules:
     comment: |
       Manages only a single, static device per config entry
   entity-category: done
-  entity-device-class: todo
+  entity-device-class: done
   entity-disabled-by-default: done
   entity-translations: done
   exception-translations: done
