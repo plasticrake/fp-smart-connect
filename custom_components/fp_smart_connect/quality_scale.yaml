@@ -49,25 +49,31 @@ rules:
   # Gold
   devices: done
   diagnostics: todo
-  discovery-update-info: todo
+  discovery-update-info: exempt
   discovery: done
-  docs-data-update: todo
-  docs-examples: todo
-  docs-known-limitations: todo
-  docs-supported-devices: todo
-  docs-supported-functions: todo
-  docs-troubleshooting: todo
-  docs-use-cases: todo
-  dynamic-devices: todo
-  entity-category: todo
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: |
+      Manages only a single, static device per config entry
+  entity-category: done
   entity-device-class: todo
   entity-disabled-by-default: done
   entity-translations: done
   exception-translations: done
   icon-translations: done
-  reconfiguration-flow: todo
-  repair-issues: todo
-  stale-devices: todo
+  reconfiguration-flow: exempt
+  repair-issues: exempt
+  stale-devices:
+    status: exempt
+    comment: |
+      Manages only a single, static device per config entry
 
   # Platinum
   async-dependency: todo
