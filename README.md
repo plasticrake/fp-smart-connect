@@ -118,7 +118,7 @@ data:
     - 5 # track number (Brahms: Lullaby)
 ```
 
-##### `fp_smart_connect.apply_preset`
+#### `fp_smart_connect.apply_preset`
 
 Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same option values as the entities above, which are lowercase keys such as `ocean`, `very_fast`, `30_minutes`, or `blue` (modes also accept `off`). The display names shown in the UI also work, so `30 Minutes` and `30_minutes` mean the same thing. Brightness and volume use the device's native ranges: `volume_level` is 0-15, `animal_projection_brightness` is 0-10, `nightlight_brightness` is 0-7, and `star_projection_brightness` is 0-6. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
 
