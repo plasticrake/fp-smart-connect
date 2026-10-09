@@ -17,5 +17,5 @@
   "loggers": ["fp_soother_lib"],
   "quality_scale": "silver",
   "requirements": ["fp-soother-lib>=1.1.0"],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
