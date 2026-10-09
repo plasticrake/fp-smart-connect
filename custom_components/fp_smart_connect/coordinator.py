@@ -33,7 +33,7 @@ connection for its whole lifetime:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from fp_soother_lib import SootherCommandError, SootherConnectionError
 from homeassistant.components.bluetooth import BluetoothScanningMode
@@ -169,6 +169,7 @@ class FpSootherCoordinator(ActiveBluetoothDataUpdateCoordinator[None]):
             self._unavailable_logged = False
 
     @property
+    @override
     def available(self) -> bool:
         """Return True only if still advertising AND our GATT link is up."""
         return super().available and self._connection_ready

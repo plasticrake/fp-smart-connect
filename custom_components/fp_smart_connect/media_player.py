@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
@@ -55,6 +55,7 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
         self._last_sound_mode = 1
 
     @property
+    @override
     def state(self) -> MediaPlayerState:
         """Return the current playback state.
 
@@ -69,11 +70,13 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
         )
 
     @property
+    @override
     def volume_level(self) -> float:
         """Return the current volume, scaled to Home Assistant's 0.0-1.0."""
         return volume_to_ha(self._state.volume_level)
 
     @property
+    @override
     def source(self) -> str | None:
         """Return the current sound mode's option, or None when paused (sound_mode == 0)."""
         if not self._state.sound_mode:
@@ -81,6 +84,7 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
         return SOUND_MODE_MAP.option_for(self._state.sound_mode)
 
     @property
+    @override
     def source_list(self) -> list[str]:
         """Return the selectable sound mode options. 0 (off/paused) is not
         a source -- it's reached via pause, not source selection."""
@@ -89,24 +93,28 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
             return list(SOUND_MODE_MAP.option_to_raw)
         return SOUND_MODE_MAP.options_for(raw)
 
+    @override
     async def async_media_play(self) -> None:
         """Resume the last-selected sound."""
         await self._async_command(
             self.coordinator.client.set_sound_mode(self._last_sound_mode)
         )
 
+    @override
     async def async_media_pause(self) -> None:
         """Stop playback."""
         if self._state.sound_mode:
             self._last_sound_mode = self._state.sound_mode
         await self._async_command(self.coordinator.client.set_sound_mode(0))
 
+    @override
     async def async_set_volume_level(self, volume: float) -> None:
         """Set the volume."""
         await self._async_command(
             self.coordinator.client.set_volume(volume_from_ha(volume))
         )
 
+    @override
     async def async_select_source(self, source: str) -> None:
         """Select a sound mode."""
         raw = SOUND_MODE_MAP.raw_for(source)

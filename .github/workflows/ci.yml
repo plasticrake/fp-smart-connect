@@ -33,5 +33,8 @@ jobs:
       - name: Type check
         run: uv run ty check
 
+      - name: Type check (mypy)
+        run: uv run mypy
+
       - name: Test
         run: uv run pytest

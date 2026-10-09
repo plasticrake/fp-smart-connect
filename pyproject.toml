@@ -10,6 +10,7 @@ dependencies = ["fp-soother-lib>=1.1.0"]
 dev = [
     "aiousbwatcher==1.1.2",                            # required by homeassistant testing
     "homeassistant>=2026.9.1",
+    "mypy>=2.4.0",
     "pytest-homeassistant-custom-component==0.13.364",
     "ruff>=0.16.6",
     "serialx==1.10.0",                                 # required by homeassistant testing
@@ -20,6 +21,48 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.mypy]
+# Mirrors home-assistant/core's mypy.ini as applied to integrations listed in
+# its .strict-typing file, plus disallow_any_generics as extra strictness.
+files = ["custom_components"]
+python_version = "3.14"
+platform = "linux"
+follow_imports = "normal"
+local_partial_types = true
+strict_equality = true
+strict_bytes = true
+no_implicit_optional = true
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+enable_error_code = [
+    "deprecated",
+    "explicit-override",
+    "ignore-without-code",
+    "redundant-self",
+    "truthy-iterable",
+]
+disable_error_code = ["annotation-unchecked", "import-not-found", "import-untyped"]
+extra_checks = false
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "custom_components.fp_smart_connect.*"
+disallow_any_generics = true
+
+[tool.ty.rules]
+# Catch the same issues as mypy's explicit-override and disallow_any_generics
+# (see [tool.mypy]) during the faster ty pass.
+missing-override-decorator = "error"
+missing-type-argument = "error"
 
 [tool.uv]
 exclude-newer = "2 days"

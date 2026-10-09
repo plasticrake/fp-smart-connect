@@ -167,16 +167,13 @@ PRESET_FIELDS: dict[str, Any] = {
     ),
 }
 
+_APPLY_PRESET_FIELDS: dict[vol.Marker, Any] = {
+    vol.Required(ATTR_DEVICE_ID): cv.string,
+    **{vol.Optional(name): validator for name, validator in PRESET_FIELDS.items()},
+}
+
 APPLY_PRESET_SCHEMA = vol.All(
-    vol.Schema(
-        {
-            vol.Required(ATTR_DEVICE_ID): cv.string,
-            **{
-                vol.Optional(name): validator
-                for name, validator in PRESET_FIELDS.items()
-            },
-        }
-    ),
+    vol.Schema(_APPLY_PRESET_FIELDS),
     cv.has_at_least_one_key(*PRESET_FIELDS),
 )
 

@@ -19,6 +19,7 @@ Repository memory is not shared between AI agents. When verified project facts a
 - `scripts/develop` — runs a local Home Assistant instance against `config/`, with `custom_components/` on `PYTHONPATH` so the integration loads without symlinks. First run bootstraps `config/` via `hass --script ensure_config`.
 - `uv run pytest` — runs the test suite in `tests/` (config flow, coordinator, every entity platform, service actions, and mappings). Run this before considering any Python change done, alongside `scripts/lint`.
 - `uv run ty check` — type-checks the project. CI runs it alongside ruff and pytest, so it must pass too.
+- `uv run mypy` — type-checks `custom_components/` with the `[tool.mypy]` config in `pyproject.toml`, which mirrors home-assistant/core's settings for strict-typed integrations. CI runs it, so it must pass too.
 
 ## Architecture notes
 
@@ -27,5 +28,6 @@ Repository memory is not shared between AI agents. When verified project facts a
 - **Icons**: entity and action icons live in `custom_components/fp_smart_connect/icons.json` (icon translations), keyed by the same `translation_key`s as `strings.json`. Don't set `_attr_icon` or `icon=` in Python. When adding an entity or action, add its icon too; `tests/test_icons.py` fails if the two files drift apart. Use only icon names that exist in Material Design Icons.
 - **`fp-soother-lib` dependency**: installed from PyPI. It is declared in both `pyproject.toml` (`dependencies`, for the dev environment and tests) and `manifest.json` (`requirements`, which is what Home Assistant installs for users). Bump both together, re-run `uv lock`, and keep `loggers` in the manifest pointed at `fp_soother_lib`.
 - **Linting**: `.ruff.toml` mirrors home-assistant/core's own ruff config, with `select = ["ALL"]` and a short, deliberate ignore list (formatter conflicts and `ANN401`). Don't add broad new ignores; fix the lint instead unless it genuinely conflicts with the formatter the way the existing entries do.
+- **Typing**: `strict-typing` is `done`, enforced by `uv run mypy` (`[tool.mypy]` in `pyproject.toml` mirrors home-assistant/core's `mypy.ini` for integrations in its `.strict-typing` file, plus `disallow_any_generics`; keep it in sync if core's settings change). That config enables `explicit-override`, so mark every method or property that overrides a Home Assistant base class with `typing.override` (below `@property`, directly above the `def`), as core integrations do. ty's opt-in `missing-override-decorator` and `missing-type-argument` rules are also enabled so the faster `ty check` catches most of the same issues.
 - **Python version**: `>=3.14.2` (`pyproject.toml`), ruff `target-version = "py314"`. This is newer than most Home Assistant core/integration code, so older-Python idioms and fallbacks are usually unnecessary.
 - **Markdown prose**: rely on the editor's word-wrap. Write each paragraph or list item as a single line and don't hard-wrap prose at a fixed column.
