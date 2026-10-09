@@ -76,6 +76,9 @@ rules:
       Manages only a single, static device per config entry
 
   # Platinum
-  async-dependency: todo
-  inject-websession: todo
+  async-dependency: done
+  inject-websession:
+    status: exempt
+    comment: |
+      Devices are controlled over Bluetooth; no HTTP session is used
   strict-typing: done
