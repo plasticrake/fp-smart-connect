@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 
@@ -164,6 +164,7 @@ class FpSootherSelect(FpSootherEntity, SelectEntity):
         self.entity_description = description
 
     @property
+    @override
     def current_option(self) -> str | None:
         """Return the currently selected option, or None if not yet known."""
         raw = getattr(self._state, self.entity_description.state_attr)
@@ -172,6 +173,7 @@ class FpSootherSelect(FpSootherEntity, SelectEntity):
         return self.entity_description.value_map.option_for(raw)
 
     @property
+    @override
     def options(self) -> list[str]:
         """Return the list of available options."""
         raw = getattr(self._state, self.entity_description.state_attr)
@@ -179,6 +181,7 @@ class FpSootherSelect(FpSootherEntity, SelectEntity):
             return list(self.entity_description.value_map.option_to_raw)
         return self.entity_description.value_map.options_for(raw)
 
+    @override
     async def async_select_option(self, option: str) -> None:
         """Select a new option."""
         raw = self.entity_description.value_map.raw_for(option)

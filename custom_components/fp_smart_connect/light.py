@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
@@ -136,17 +136,20 @@ class FpSootherLight(FpSootherEntity, LightEntity):
             self._attr_effect_list = list(description.effect_map.option_to_raw)
 
     @property
+    @override
     def is_on(self) -> bool:
         """Return True if the mode attribute is non-zero (i.e. not off)."""
         return bool(getattr(self._state, self._description.mode_attr))
 
     @property
+    @override
     def brightness(self) -> int:
         """Return the current brightness, scaled to Home Assistant's 0-255."""
         native = getattr(self._state, self._description.brightness_attr)
         return scale_to_ha_brightness(native, self._description.native_max)
 
     @property
+    @override
     def effect(self) -> str | None:
         """Return the current effect option, or None if off or unsupported."""
         if self._description.effect_map is None:
@@ -156,6 +159,7 @@ class FpSootherLight(FpSootherEntity, LightEntity):
             return None
         return self._description.effect_map.option_for(mode)
 
+    @override
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on, optionally setting an effect and/or a brightness."""
         client = self.coordinator.client
@@ -187,6 +191,7 @@ class FpSootherLight(FpSootherEntity, LightEntity):
             )
             await self._async_command(self._description.set_brightness(client, level))
 
+    @override
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn off."""
         await self._async_command(

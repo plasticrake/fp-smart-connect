@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
@@ -78,6 +78,7 @@ class FpSootherBinarySensor(FpSootherEntity, BinarySensorEntity):
         self.entity_description = description
 
     @property
+    @override
     def is_on(self) -> bool:
         """Return True if the flag is set."""
         return bool(getattr(self._state, self.entity_description.state_attr))

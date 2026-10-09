@@ -16,6 +16,7 @@ resends
 rssi
 serialx
 ssdp
+subclassing
 testpaths
 unconfigured
 unsub

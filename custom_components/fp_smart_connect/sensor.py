@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import EntityCategory
@@ -119,11 +119,13 @@ class FpSootherSensor(FpSootherEntity, SensorEntity):
         self.entity_description = description
 
     @property
+    @override
     def native_value(self) -> StateType:
         """Return the sensor's value, or None if not yet known."""
         return self.entity_description.value_fn(self._state)
 
     @property
+    @override
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return any extra state attributes."""
         if self.entity_description.attributes_fn is None:
