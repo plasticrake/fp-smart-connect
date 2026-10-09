@@ -76,6 +76,8 @@ def mock_client() -> Generator[MagicMock]:
     client.is_connected = True
     client.is_paired = True
     client.session_key = bytes.fromhex(TEST_SESSION_KEY_HEX)
+    client.uses_shared_key = False
+    client.peripheral_type = 1
     client.state = mock_soother_state()
     with (
         patch("custom_components.fp_smart_connect.SootherClient", return_value=client),

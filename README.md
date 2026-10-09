@@ -1,10 +1,10 @@
 # Fisher-Price Smart Connect Home Assistant Integration
 
-The **Fisher-Price Smart Connect** integration connects Home Assistant to [Fisher-Price Smart Connect](https://www.fisher-price.com/) devices over Bluetooth Low Energy (BLE). These are app-controlled baby soothers and nursery products. The integration talks to them directly over BLE, so Home Assistant can automate and monitor them. It supports only the Deluxe Soother (DYW47) for now, and exposes its night light, star projection, animal projection, and sound machine as entities.
+The **Fisher-Price Smart Connect** integration connects Home Assistant to [Fisher-Price Smart Connect](https://www.fisher-price.com/) devices over Bluetooth Low Energy (BLE). These are app-controlled baby soothers and nursery products.
 
 State updates are pushed over a persistent BLE connection (`local_push`). The integration does not use a cloud account or app pairing beyond the one-time BLE pairing handshake described below.
 
-## Supported Devices
+## Supported devices
 
 - Deluxe Soother (DYW47) (Tested firmware versions: v8, v11)
 
@@ -34,7 +34,7 @@ Once installed, put the Deluxe Soother into pairing mode. Home Assistant should 
 
 ### Deluxe Soother (DYW47)
 
-#### Media Players
+#### Media players
 
 - **Sound**: play/pause, volume, and the sound as its source.
   - **Sources**:
@@ -72,15 +72,15 @@ Once installed, put the Deluxe Soother into pairing mode. Home Assistant should 
 - **Light Timer**
   - **Options**: \<number\>_minutes, continuous
 - **Sleep Stages**
-  - **Options**: settle, soothe, sleep.
+  - **Options**: settle, soothe, sleep
 - **Settle Timer**
   - **Options**: \<number\>_minutes
 - **Soothe Timer**
   - **Options**: \<number\>_minutes
 - **Sleep Timer**
   - **Options**: \<number\>_minutes, continuous
-- **Star Color 1**, **Star Color 2**, **Star Color 3**: the colors used by the **custom** Star Projection effect
-  - **Options**: red, orange, yellow, green, blue, purple.
+- **Star Color 1**, **Star Color 2**, **Star Color 3**: the colors used by the custom Star Projection effect
+  - **Options**: red, orange, yellow, green, blue, purple
 
 #### Sensors
 
@@ -134,9 +134,9 @@ data:
   light_timer: 30_minutes
 ```
 
-## Data Updates
+## Data updates
 
-The integration does not poll. When it is set up, it opens a Bluetooth connection to the device, reads the full device state once, and keeps the connection open. After that, the device pushes a notification whenever its state changes, including changes made with its physical buttons, and Home Assistant updates the entities right away. Commands sent from Home Assistant update the entities from the state the device reports back, not from an assumed value.
+The integration does not poll. When it is set up, it opens a Bluetooth connection to the device, reads the full device state once, and keeps the connection open. After that, the device pushes a notification whenever its state changes, including changes made with its physical buttons, and Home Assistant updates the entities right away. When Home Assistant sends a command, the entities change only after the device reports its new state.
 
 If the connection drops, or the device stops advertising over Bluetooth, all entities become unavailable. The integration tries to reconnect the next time Home Assistant receives a Bluetooth advertisement from the device. Once it reconnects, it reads the full state again and the entities become available.
 
@@ -190,23 +190,24 @@ automation:
             - light.deluxe_soother_animal_projection
 ```
 
-## Known Limitations
+## Known limitations
 
-This integration relies on a stable Bluetooth connection to the device. If the connection is lost, the entities will become unavailable until the device is back in range and the connection is re-established. This integration does not provide the ability to update device firmware.
+The integration needs a stable Bluetooth connection. When the connection drops, the entities stay unavailable until the device is back in range and reconnects. The integration cannot update device firmware.
 
 ## Troubleshooting
 
-If you encounter issues with the integration:
+If the integration isn't working:
 
 - Ensure the device is within Bluetooth range.
-- Check the Home Assistant logs (Tools → System → Logs) for any error messages related to the integration.
-- [Enable debug logging](https://www.home-assistant.io/docs/configuration/troubleshooting/#debug-logs-and-diagnostics) for the integration in Home Assistant to gather more detailed information.
+- Check the Home Assistant logs (Tools → System → Logs) for errors from the integration.
+- [Enable debug logging](https://www.home-assistant.io/docs/configuration/troubleshooting/#debug-logs-and-diagnostics) for the integration to get more detail.
+- [Download diagnostics](https://www.home-assistant.io/integrations/diagnostics/#downloading-diagnostics) from the integration page or the device's page and attach them to bug reports.
 
 ## Removal
 
 To remove the integration, go to **Settings → Devices & Services**, find the Fisher-Price Smart Connect integration entry, and select **Delete**. This removes the device and its entities from Home Assistant.
 
-## AI Usage
+## AI usage
 
 Portions of this project (code, documentation, and/or reverse-engineering analysis) were developed with the assistance of AI tools. All AI-assisted contributions are reviewed by a human before being merged.
 
