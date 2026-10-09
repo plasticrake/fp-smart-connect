@@ -73,18 +73,18 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
 
     @property
     def source(self) -> str | None:
-        """Return the current sound mode's label, or None when paused (sound_mode == 0)."""
+        """Return the current sound mode's option, or None when paused (sound_mode == 0)."""
         if not self._state.sound_mode:
             return None
-        return SOUND_MODE_MAP.label_for(self._state.sound_mode)
+        return SOUND_MODE_MAP.option_for(self._state.sound_mode)
 
     @property
     def source_list(self) -> list[str]:
-        """Return the selectable sound mode labels. 0 (off/paused) is not
+        """Return the selectable sound mode options. 0 (off/paused) is not
         a source -- it's reached via pause, not source selection."""
         raw = self._state.sound_mode
         if not raw:
-            return list(SOUND_MODE_MAP.label_to_raw)
+            return list(SOUND_MODE_MAP.option_to_raw)
         return SOUND_MODE_MAP.options_for(raw)
 
     async def async_media_play(self) -> None:

@@ -87,7 +87,7 @@ async def test_star_projection_effect_mapping(
     mock_client: MagicMock,
     entity_registry: er.EntityRegistry,
 ) -> None:
-    """A known mode maps to its effect label; mode 0 has no effect."""
+    """A known mode maps to its effect option; mode 0 has no effect."""
     entity_id = _entity_id_for(entity_registry, "star_projection")
 
     mock_client.state.star_projection_sequence_mode = 1
@@ -95,7 +95,7 @@ async def test_star_projection_effect_mapping(
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state is not None
-    assert state.attributes["effect"] == "Rainbow"
+    assert state.attributes["effect"] == "rainbow"
 
     mock_client.state.star_projection_sequence_mode = 0
     _refresh(setup_integration)
@@ -170,7 +170,7 @@ async def test_star_projection_explicit_effect_turn_on(
     await hass.services.async_call(
         "light",
         "turn_on",
-        {"entity_id": entity_id, "effect": "Cool Colors"},
+        {"entity_id": entity_id, "effect": "cool_colors"},
         blocking=True,
     )
     mock_client.set_star_projection_sequence_mode.assert_awaited_once_with(2)
@@ -188,7 +188,7 @@ async def test_star_projection_unknown_effect_is_rejected(
         await hass.services.async_call(
             "light",
             "turn_on",
-            {"entity_id": entity_id, "effect": "Not A Real Effect"},
+            {"entity_id": entity_id, "effect": "not_a_real_effect"},
             blocking=True,
         )
     mock_client.set_star_projection_sequence_mode.assert_not_called()
@@ -270,7 +270,7 @@ async def test_star_projection_turn_on_with_effect_and_brightness(
     await hass.services.async_call(
         "light",
         "turn_on",
-        {"entity_id": entity_id, "effect": "Cool Colors", "brightness": 255},
+        {"entity_id": entity_id, "effect": "cool_colors", "brightness": 255},
         blocking=True,
     )
     assert [c for c in mock_client.mock_calls if c[0].startswith("set_")] == [

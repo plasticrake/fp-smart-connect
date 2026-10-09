@@ -1,6 +1,6 @@
 # Fisher-Price Smart Connect Home Assistant Integration
 
-The **Fisher-Price Smart Connect** integration connects Home Assistant to [Fisher-Price Smart Connect](https://www.fisher-price.com/) devices over Bluetooth Low Energy (BLE). Fisher-Price Smart Connect devices are app-controlled baby soothers and nurseries products; this integration talks to them directly over BLE, allowing Home Assistant to automate and monitor them. It currently supports only the Deluxe Soother (DYW47), exposing its night light, star projection, animal projection, and sound machine as entities.
+The **Fisher-Price Smart Connect** integration connects Home Assistant to [Fisher-Price Smart Connect](https://www.fisher-price.com/) devices over Bluetooth Low Energy (BLE). These are app-controlled baby soothers and nursery products. The integration talks to them directly over BLE, so Home Assistant can automate and monitor them. It supports only the Deluxe Soother (DYW47) for now, and exposes its night light, star projection, animal projection, and sound machine as entities.
 
 State updates are pushed over a persistent BLE connection (`local_push`). The integration does not use a cloud account or app pairing beyond the one-time BLE pairing handshake described below.
 
@@ -44,11 +44,11 @@ Once installed, put the Deluxe Soother into pairing mode. Home Assistant should 
 
 Replaces the tracks selected in one playlist.
 
-| Field       | Description                                                                                                                                                                                                                                       |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `device_id` | The Deluxe Soother to control.                                                                                                                                                                                                                    |
-| `playlist`  | `settling` or `soothing`.                                                                                                                                                                                                                         |
-| `tracks`    | One or more tracks, each by name or by track number (1-5) within the playlist. Settling: It's Raining, It's Pouring; Aurora; Six Little Ducks; Frere Jacques; Brahms: Lullaby. Soothing: Somewhere; Daylight; Dreaming Dawn; Motions; Polar Wind. |
+| Field       | Description                                                                                                                                                                                                                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `device_id` | The Deluxe Soother to control.                                                                                                                                                                                                                                                                     |
+| `playlist`  | `settling` or `soothing`.                                                                                                                                                                                                                                                                          |
+| `tracks`    | One or more tracks, each by name (in any case, or as a key like `brahms_lullaby`) or by track number (1-5) within the playlist. Settling: It's Raining, It's Pouring; Aurora; Six Little Ducks; Frere Jacques; Brahms: Lullaby. Soothing: Somewhere; Daylight; Dreaming Dawn; Motions; Polar Wind. |
 
 Unknown tracks are rejected and nothing is changed.
 
@@ -58,29 +58,30 @@ data:
   device_id: 0123456789abcdef0123456789abcdef
   playlist: settling
   tracks:
-    - Aurora
-    - Six Little Ducks
+    - Aurora # display name
+    - six_little_ducks # key
+    - 5 # track number (Brahms: Lullaby)
 ```
 
 ### `fp_smart_connect.apply_preset`
 
-Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same labels as the entities above (modes also accept `Off`). Brightness and volume use the device's native ranges: `volume_level` is 0-15, `animal_projection_brightness` is 0-10, `nightlight_brightness` is 0-7, and `star_projection_brightness` is 0-6. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
+Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same option values as the entities above, which are lowercase keys such as `ocean`, `very_fast`, `30_minutes`, or `blue` (modes also accept `off`). The display names shown in the UI also work, so `30 Minutes` and `30_minutes` mean the same thing. Brightness and volume use the device's native ranges: `volume_level` is 0-15, `animal_projection_brightness` is 0-10, `nightlight_brightness` is 0-7, and `star_projection_brightness` is 0-6. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
 
 ```yaml
 action: fp_smart_connect.apply_preset
 data:
   device_id: 0123456789abcdef0123456789abcdef
-  sound_mode: Ocean
+  sound_mode: ocean
   volume_level: 6
   nightlight_mode: true
   nightlight_brightness: 3
-  star_projection_sequence_mode: "Off"
-  light_timer: 30 Minutes
+  star_projection_sequence_mode: "off"
+  light_timer: 30_minutes
 ```
 
 ## Removal
 
-Removing this integration follows the standard Home Assistant procedure: go to **Settings → Devices & Services**, find the Fisher-Price Smart Connect integration entry, and select **Delete**. This removes the device and its entities from Home Assistant; no other cleanup is required.
+To remove the integration, go to **Settings → Devices & Services**, find the Fisher-Price Smart Connect integration entry, and select **Delete**. This removes the device and its entities from Home Assistant.
 
 ## AI Usage
 

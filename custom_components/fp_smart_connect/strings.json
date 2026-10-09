@@ -27,7 +27,29 @@
   "entity": {
     "media_player": {
       "sound": {
-        "name": "Sound"
+        "name": "Sound",
+        "state_attributes": {
+          "source": {
+            "state": {
+              "pink_noise": "Pink Noise",
+              "brown_noise": "Brown Noise",
+              "womb": "Womb",
+              "ocean": "Ocean",
+              "nature": "Nature",
+              "wind": "Wind",
+              "its_raining_its_pouring": "It's Raining, It's Pouring",
+              "aurora": "Aurora",
+              "six_little_ducks": "Six Little Ducks",
+              "frere_jacques": "Frere Jacques",
+              "brahms_lullaby": "Brahms: Lullaby",
+              "somewhere": "Somewhere",
+              "daylight": "Daylight",
+              "dreaming_dawn": "Dreaming Dawn",
+              "motions": "Motions",
+              "polar_wind": "Polar Wind"
+            }
+          }
+        }
       }
     },
     "light": {
@@ -35,39 +57,148 @@
         "name": "Night Light"
       },
       "star_projection": {
-        "name": "Star Projection"
+        "name": "Star Projection",
+        "state_attributes": {
+          "effect": {
+            "state": {
+              "rainbow": "Rainbow",
+              "cool_colors": "Cool Colors",
+              "warm_colors": "Warm Colors",
+              "custom": "Custom"
+            }
+          }
+        }
       },
       "animal_projection": {
-        "name": "Animal Projection"
+        "name": "Animal Projection",
+        "state_attributes": {
+          "effect": {
+            "state": {
+              "on": "On",
+              "lighthouse": "Lighthouse",
+              "candle": "Candle"
+            }
+          }
+        }
       }
     },
     "select": {
       "star_projection_speed": {
-        "name": "Star Projection Speed"
+        "name": "Star Projection Speed",
+        "state": {
+          "slow": "Slow",
+          "normal": "Normal",
+          "fast": "Fast",
+          "very_fast": "Very Fast"
+        }
       },
       "animal_projection_speed": {
-        "name": "Animal Projection Speed"
+        "name": "Animal Projection Speed",
+        "state": {
+          "slow": "Slow",
+          "fast": "Fast"
+        }
       },
       "music_timer": {
-        "name": "Music Timer"
+        "name": "Music Timer",
+        "state": {
+          "5_minutes": "5 Minutes",
+          "10_minutes": "10 Minutes",
+          "15_minutes": "15 Minutes",
+          "20_minutes": "20 Minutes",
+          "25_minutes": "25 Minutes",
+          "30_minutes": "30 Minutes",
+          "60_minutes": "60 Minutes",
+          "90_minutes": "90 Minutes",
+          "continuous": "Continuous"
+        }
       },
       "light_timer": {
-        "name": "Light Timer"
+        "name": "Light Timer",
+        "state": {
+          "5_minutes": "5 Minutes",
+          "10_minutes": "10 Minutes",
+          "15_minutes": "15 Minutes",
+          "20_minutes": "20 Minutes",
+          "25_minutes": "25 Minutes",
+          "30_minutes": "30 Minutes",
+          "60_minutes": "60 Minutes",
+          "90_minutes": "90 Minutes",
+          "continuous": "Continuous"
+        }
       },
       "sleep_stages": {
-        "name": "Sleep Stages"
+        "name": "Sleep Stages",
+        "state": {
+          "off": "Off",
+          "settle": "Settle",
+          "soothe": "Soothe",
+          "sleep": "Sleep"
+        }
       },
       "settle_timer": {
-        "name": "Settle Timer"
+        "name": "Settle Timer",
+        "state": {
+          "5_minutes": "5 Minutes",
+          "10_minutes": "10 Minutes",
+          "15_minutes": "15 Minutes",
+          "20_minutes": "20 Minutes",
+          "25_minutes": "25 Minutes",
+          "30_minutes": "30 Minutes",
+          "35_minutes": "35 Minutes",
+          "40_minutes": "40 Minutes",
+          "45_minutes": "45 Minutes",
+          "50_minutes": "50 Minutes",
+          "60_minutes": "60 Minutes",
+          "90_minutes": "90 Minutes"
+        }
       },
       "soothe_timer": {
-        "name": "Soothe Timer"
+        "name": "Soothe Timer",
+        "state": {
+          "5_minutes": "5 Minutes",
+          "10_minutes": "10 Minutes",
+          "15_minutes": "15 Minutes",
+          "20_minutes": "20 Minutes",
+          "25_minutes": "25 Minutes",
+          "30_minutes": "30 Minutes",
+          "35_minutes": "35 Minutes",
+          "40_minutes": "40 Minutes",
+          "45_minutes": "45 Minutes",
+          "50_minutes": "50 Minutes",
+          "60_minutes": "60 Minutes",
+          "90_minutes": "90 Minutes"
+        }
       },
       "sleep_timer": {
-        "name": "Sleep Timer"
+        "name": "Sleep Timer",
+        "state": {
+          "5_minutes": "5 Minutes",
+          "10_minutes": "10 Minutes",
+          "15_minutes": "15 Minutes",
+          "20_minutes": "20 Minutes",
+          "25_minutes": "25 Minutes",
+          "30_minutes": "30 Minutes",
+          "35_minutes": "35 Minutes",
+          "40_minutes": "40 Minutes",
+          "45_minutes": "45 Minutes",
+          "50_minutes": "50 Minutes",
+          "60_minutes": "60 Minutes",
+          "90_minutes": "90 Minutes",
+          "continuous": "Continuous"
+        }
       },
       "star_color": {
-        "name": "Star Color {slot}"
+        "name": "Star Color {slot}",
+        "state": {
+          "off": "Off",
+          "red": "Red",
+          "orange": "Orange",
+          "yellow": "Yellow",
+          "green": "Green",
+          "blue": "Blue",
+          "purple": "Purple"
+        }
       }
     },
     "sensor": {
@@ -128,6 +259,90 @@
       "options": {
         "settling": "Settling",
         "soothing": "Soothing"
+      }
+    },
+    "sound_mode": {
+      "options": {
+        "off": "Off",
+        "pink_noise": "Pink Noise",
+        "brown_noise": "Brown Noise",
+        "womb": "Womb",
+        "ocean": "Ocean",
+        "nature": "Nature",
+        "wind": "Wind",
+        "its_raining_its_pouring": "It's Raining, It's Pouring",
+        "aurora": "Aurora",
+        "six_little_ducks": "Six Little Ducks",
+        "frere_jacques": "Frere Jacques",
+        "brahms_lullaby": "Brahms: Lullaby",
+        "somewhere": "Somewhere",
+        "daylight": "Daylight",
+        "dreaming_dawn": "Dreaming Dawn",
+        "motions": "Motions",
+        "polar_wind": "Polar Wind"
+      }
+    },
+    "animal_projection_mode": {
+      "options": {
+        "off": "Off",
+        "on": "On",
+        "lighthouse": "Lighthouse",
+        "candle": "Candle"
+      }
+    },
+    "animal_projection_speed": {
+      "options": {
+        "slow": "Slow",
+        "fast": "Fast"
+      }
+    },
+    "star_projection_mode": {
+      "options": {
+        "off": "Off",
+        "rainbow": "Rainbow",
+        "cool_colors": "Cool Colors",
+        "warm_colors": "Warm Colors",
+        "custom": "Custom"
+      }
+    },
+    "star_color": {
+      "options": {
+        "off": "Off",
+        "red": "Red",
+        "orange": "Orange",
+        "yellow": "Yellow",
+        "green": "Green",
+        "blue": "Blue",
+        "purple": "Purple"
+      }
+    },
+    "star_projection_speed": {
+      "options": {
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast",
+        "very_fast": "Very Fast"
+      }
+    },
+    "sleep_stages_mode": {
+      "options": {
+        "off": "Off",
+        "settle": "Settle",
+        "soothe": "Soothe",
+        "sleep": "Sleep"
+      }
+    },
+    "timer": {
+      "options": {
+        "5_minutes": "5 Minutes",
+        "10_minutes": "10 Minutes",
+        "15_minutes": "15 Minutes",
+        "20_minutes": "20 Minutes",
+        "25_minutes": "25 Minutes",
+        "30_minutes": "30 Minutes",
+        "60_minutes": "60 Minutes",
+        "90_minutes": "90 Minutes",
+        "continuous": "Continuous"
       }
     }
   },

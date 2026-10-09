@@ -133,7 +133,7 @@ class FpSootherLight(FpSootherEntity, LightEntity):
         self._attr_color_mode = ColorMode.BRIGHTNESS
         if description.effect_map is not None:
             self._attr_supported_features = LightEntityFeature.EFFECT
-            self._attr_effect_list = list(description.effect_map.label_to_raw)
+            self._attr_effect_list = list(description.effect_map.option_to_raw)
 
     @property
     def is_on(self) -> bool:
@@ -148,13 +148,13 @@ class FpSootherLight(FpSootherEntity, LightEntity):
 
     @property
     def effect(self) -> str | None:
-        """Return the current effect label, or None if off or unsupported."""
+        """Return the current effect option, or None if off or unsupported."""
         if self._description.effect_map is None:
             return None
         mode = getattr(self._state, self._description.mode_attr)
         if not mode:
             return None
-        return self._description.effect_map.label_for(mode)
+        return self._description.effect_map.option_for(mode)
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on, optionally setting an effect and/or a brightness."""

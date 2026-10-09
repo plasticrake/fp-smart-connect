@@ -17,7 +17,7 @@ The integration depends on these public library capabilities:
 - `SootherClient.state` (`SootherState`) for the last known state.
 - The typed `set_*` methods for all supported device commands.
 - `SootherClient.send_preset(**overrides)` for the composite multi-attribute write (see Presets below).
-- The named value mappings in `fp_soother_lib.constants` (e.g. `SOUND_MODES`, `STAR_PROJECTION_SEQUENCES`, `STAR_PROJECTION_SPEEDS`, `ANIMAL_PROJECTION_MODES`, `ANIMAL_PROJECTION_SPEEDS`, `SLEEP_STAGES_MODES`, `TIMER_DURATIONS`, `SLEEP_STAGE_TIMER_DURATIONS`, `SLEEP_TIMER_DURATIONS`, `CAPTIVE_PLAYLIST_TRACKS`, `SOOTHE_PLAYLIST_TRACKS`, `CUSTOM_COLORS`) as the source of truth for entity option labels and their numeric values. The integration does not keep its own copies of these tables.
+- The named value mappings in `fp_soother_lib.constants` (e.g. `SOUND_MODES`, `STAR_PROJECTION_SEQUENCES`, `STAR_PROJECTION_SPEEDS`, `ANIMAL_PROJECTION_MODES`, `ANIMAL_PROJECTION_SPEEDS`, `SLEEP_STAGES_MODES`, `TIMER_DURATIONS`, `SLEEP_STAGE_TIMER_DURATIONS`, `SLEEP_TIMER_DURATIONS`, `CAPTIVE_PLAYLIST_TRACKS`, `SOOTHE_PLAYLIST_TRACKS`, `CUSTOM_COLORS`) as the source of truth for entity options and their numeric values. The integration does not keep its own copies of these tables.
 
 Use one client per config entry. Entity methods must not create their own clients or issue raw protocol commands. The library's internal I/O lock serializes read-modify-write commands when several Home Assistant controls change close together.
 
@@ -85,15 +85,23 @@ The names below are proposed display names. Entity IDs should be generated from 
 | `light`        | Star Projection   | `star_projection_sequence_mode`, `star_projection_brightness` | `set_star_projection_sequence_mode`, `set_star_projection_brightness` | Mode 0 is off; modes 1-4 are effects.                                                                                                                                                                                                                                                                                                                                          |
 | `light`        | Animal Projection | `animal_projection_mode`, `animal_projection_brightness`      | `set_animal_projection_mode`, `set_animal_projection_brightness`      | Mode 0 is off; modes 1-3 are effects.                                                                                                                                                                                                                                                                                                                                          |
 
-The `media_player` source list should use stable, human-readable labels for the known sound values:
+### Option values
+
+Every enum-like value (select options, light effects, media player sources, and the matching `apply_preset` fields) uses the library's own snake_case key from `fp_soother_lib.constants` as its state or attribute value, for example `very_fast`, `10_minutes`, `cool_colors`, or `its_raining_its_pouring`. These keys are stable across languages and are what automations, scripts, and actions use. The human-readable names below are display names only: `strings.json` translates them under `entity.select.<key>.state`, `entity.light.<key>.state_attributes.effect.state`, `entity.media_player.sound.state_attributes.source.state`, and `selector.<key>.options` for the action fields. Keyed options also let `icons.json` give individual states their own icons, which hassfest only allows for slug-shaped values.
+
+Undocumented raw values get a generic fallback option, `<prefix>_<n>` (for example `mode_17` or `setting_12`). These have no translation, so the UI shows the raw option.
+
+Track names in the playlist sensors and in `set_playlist`'s `tracks` (and the two `apply_preset` playlist fields) are not enum options. The sensors show human-readable names, so a track's playlist name matches its sound source's display name. The actions accept either that name or the library key, as described under Value formats.
+
+The `media_player` source display names for the known sound values are:
 
 - Sounds: Pink Noise, Brown Noise, Womb, Ocean, Nature, Wind.
 - Settling: It's Raining, It's Pouring; Aurora; Six Little Ducks; Frere Jacques; Brahms: Lullaby.
 - Soothing: Somewhere; Daylight; Dreaming Dawn; Motions; Polar Wind.
 
-Only values 1-16 have documented meanings. Unknown values should appear as a generic `Mode <n>` source so they stay visible.
+Only values 1-16 have documented meanings. Unknown values should appear as a generic `mode_<n>` source so they stay visible.
 
-Light effect mappings:
+Light effect display names:
 
 - Star Projection: Rainbow (1), Cool Colors (2), Warm Colors (3), Custom (4).
 - Animal Projection: On (1), Lighthouse (2), Candle (3).
@@ -165,11 +173,12 @@ Add `fp_smart_connect.apply_preset`, which targets the device and accepts an opt
 - `sound_timer_setting`, `light_timer`.
 - `previous_animal_projection_mode`, `previous_star_projection_sequence_mode`.
 
-Any field the caller omits is left for the library to fill from its own live state. `send_preset` already does this internally, so the action must not pre-fill omitted fields from a locally cached snapshot. Enum-like fields (modes, speeds, timers, playlist selections) should accept the human-readable labels used by the corresponding `select`/`light`/`sensor` entities elsewhere in this document instead of raw device integers, and validate against the same known-value mappings. As with `set_playlist`, unknown or out-of-range values must be rejected with a clear validation error, and nothing is partially applied.
+Any field the caller omits is left for the library to fill from its own live state. `send_preset` already does this internally, so the action must not pre-fill omitted fields from a locally cached snapshot. Enum-like fields (modes, speeds, timers, colors) should accept the same options as the corresponding `select`/`light`/`media_player` entities (see Option values) instead of raw device integers, and playlist selections the same track names as the playlist sensors. Both validate against the same known-value mappings. As with `set_playlist`, unknown or out-of-range values must be rejected with a clear validation error, and nothing is partially applied.
 
 Value formats, as implemented in `services.py`:
 
-- Mode fields where 0 means off (`sound_mode`, `animal_projection_mode`, `star_projection_sequence_mode`, and the two `previous_*` modes) accept the entity labels plus `Off`.
+- Mode fields where 0 means off (`sound_mode`, `animal_projection_mode`, `star_projection_sequence_mode`, and the two `previous_*` modes) accept the entity options plus `off`.
+- Enum fields also accept an option's English display name, in any case (`Very Fast`, `30 minutes`, `It's Raining, It's Pouring`). Input is normalized by lowercasing, dropping apostrophes, and collapsing other non-alphanumeric runs to `_` before validation, so labels and options can be mixed freely in one call. `tests/test_translations.py` checks that every English display name normalizes to its own option, so a display name that breaks this rule fails the tests. This applies only to `apply_preset`: Home Assistant validates `select.select_option`, light effects, and media player sources against the entity's own option list before the integration sees them.
 - `play_mode` and `nightlight_mode` are booleans.
 - Levels (`volume_level` and the three brightness fields) use the device's native ranges (0-15, 0-10, 0-7, or 0-6) instead of Home Assistant's 0-255 or 0.0-1.0 scales, so a preset round-trips exactly.
 - Playlist selections take the same track list as `set_playlist`.
@@ -198,9 +207,9 @@ If the device cannot be reached, the flow should report a retryable connection e
 - A transient BLE disconnect makes all entities unavailable while preserving their last state in Home Assistant.
 - Reconnection should restore availability and refresh the complete state, including auxiliary sleep timers and infrastructure diagnostics.
 - A command failure must be logged at warning/debug level with the entity and library exception, then surfaced to the caller as a failed Home Assistant action.
-- Unsupported or undocumented enum values must be preserved and displayed with a fallback label. They must not make the whole entity unavailable.
+- Unsupported or undocumented enum values must be preserved and displayed with a fallback option. They must not make the whole entity unavailable.
 
 ## Resolved questions
 
-1. `set_playlist` is a single unified action taking `device_id`, `playlist` (`settling` or `soothing`), and `tracks`. A track is either its name (matched case-insensitively) or its 1-based track number within the playlist, which selects bit `n - 1` of the mask. At least one track is required. Invalid input fails schema validation (`vol.Invalid`) with a message that names every unknown track and lists the valid choices, so nothing is partially applied.
-2. `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` are exposed as `apply_preset` parameters because `send_preset` writes them as part of the composite command. They accept the same effect labels as the matching light, plus `Off`.
+1. `set_playlist` is a single unified action taking `device_id`, `playlist` (`settling` or `soothing`), and `tracks`. A track is either its name or its 1-based track number within the playlist, which selects bit `n - 1` of the mask. Names and the `playlist` value go through the same normalization as `apply_preset`'s enum fields (see Value formats), so `Brahms: Lullaby`, `brahms lullaby`, and the library key `brahms_lullaby` are the same track, and `Settling` is the same as `settling`. At least one track is required. Invalid input fails schema validation (`vol.Invalid`) with a message that names every unknown track and lists the valid choices, so nothing is partially applied.
+2. `previous_animal_projection_mode` and `previous_star_projection_sequence_mode` are exposed as `apply_preset` parameters because `send_preset` writes them as part of the composite command. They accept the same effect options as the matching light, plus `off`.

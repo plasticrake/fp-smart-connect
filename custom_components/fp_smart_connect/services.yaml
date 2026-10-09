@@ -45,23 +45,24 @@ apply_preset:
       selector:
         select:
           options:
-            - "Off"
-            - Pink Noise
-            - Brown Noise
-            - Womb
-            - Ocean
-            - Nature
-            - Wind
-            - It's Raining, It's Pouring
-            - Aurora
-            - Six Little Ducks
-            - Frere Jacques
-            - "Brahms: Lullaby"
-            - Somewhere
-            - Daylight
-            - Dreaming Dawn
-            - Motions
-            - Polar Wind
+            - "off"
+            - pink_noise
+            - brown_noise
+            - womb
+            - ocean
+            - nature
+            - wind
+            - its_raining_its_pouring
+            - aurora
+            - six_little_ducks
+            - frere_jacques
+            - brahms_lullaby
+            - somewhere
+            - daylight
+            - dreaming_dawn
+            - motions
+            - polar_wind
+          translation_key: sound_mode
     volume_level:
       selector:
         number:
@@ -72,10 +73,11 @@ apply_preset:
       selector:
         select:
           options:
-            - "Off"
-            - "On"
-            - Lighthouse
-            - Candle
+            - "off"
+            - "on"
+            - lighthouse
+            - candle
+          translation_key: animal_projection_mode
     animal_projection_brightness:
       selector:
         number:
@@ -86,50 +88,55 @@ apply_preset:
       selector:
         select:
           options:
-            - Slow
-            - Fast
+            - slow
+            - fast
+          translation_key: animal_projection_speed
     star_projection_sequence_mode:
       selector:
         select:
           options:
-            - "Off"
-            - Rainbow
-            - Cool Colors
-            - Warm Colors
-            - Custom
+            - "off"
+            - rainbow
+            - cool_colors
+            - warm_colors
+            - custom
+          translation_key: star_projection_mode
     star_projection_custom_color0:
       selector:
         select:
           options:
-            - "Off"
-            - Red
-            - Orange
-            - Yellow
-            - Green
-            - Blue
-            - Purple
+            - "off"
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+          translation_key: star_color
     star_projection_custom_color1:
       selector:
         select:
           options:
-            - "Off"
-            - Red
-            - Orange
-            - Yellow
-            - Green
-            - Blue
-            - Purple
+            - "off"
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+          translation_key: star_color
     star_projection_custom_color2:
       selector:
         select:
           options:
-            - "Off"
-            - Red
-            - Orange
-            - Yellow
-            - Green
-            - Blue
-            - Purple
+            - "off"
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+          translation_key: star_color
     star_projection_brightness:
       selector:
         number:
@@ -140,10 +147,11 @@ apply_preset:
       selector:
         select:
           options:
-            - Slow
-            - Normal
-            - Fast
-            - Very Fast
+            - slow
+            - normal
+            - fast
+            - very_fast
+          translation_key: star_projection_speed
     nightlight_mode:
       selector:
         boolean: {}
@@ -157,10 +165,11 @@ apply_preset:
       selector:
         select:
           options:
-            - "Off"
-            - Settle
-            - Soothe
-            - Sleep
+            - "off"
+            - settle
+            - soothe
+            - sleep
+          translation_key: sleep_stages_mode
     captive_playlist_selection:
       selector:
         select:
@@ -187,42 +196,46 @@ apply_preset:
       selector:
         select:
           options:
-            - 5 Minutes
-            - 10 Minutes
-            - 15 Minutes
-            - 20 Minutes
-            - 25 Minutes
-            - 30 Minutes
-            - 60 Minutes
-            - 90 Minutes
-            - Continuous
+            - 5_minutes
+            - 10_minutes
+            - 15_minutes
+            - 20_minutes
+            - 25_minutes
+            - 30_minutes
+            - 60_minutes
+            - 90_minutes
+            - continuous
+          translation_key: timer
     light_timer:
       selector:
         select:
           options:
-            - 5 Minutes
-            - 10 Minutes
-            - 15 Minutes
-            - 20 Minutes
-            - 25 Minutes
-            - 30 Minutes
-            - 60 Minutes
-            - 90 Minutes
-            - Continuous
+            - 5_minutes
+            - 10_minutes
+            - 15_minutes
+            - 20_minutes
+            - 25_minutes
+            - 30_minutes
+            - 60_minutes
+            - 90_minutes
+            - continuous
+          translation_key: timer
     previous_animal_projection_mode:
       selector:
         select:
           options:
-            - "Off"
-            - "On"
-            - Lighthouse
-            - Candle
+            - "off"
+            - "on"
+            - lighthouse
+            - candle
+          translation_key: animal_projection_mode
     previous_star_projection_sequence_mode:
       selector:
         select:
           options:
-            - "Off"
-            - Rainbow
-            - Cool Colors
-            - Warm Colors
-            - Custom
+            - "off"
+            - rainbow
+            - cool_colors
+            - warm_colors
+            - custom
+          translation_key: star_projection_mode
