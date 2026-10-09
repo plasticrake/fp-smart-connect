@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from homeassistant.const import STATE_PAUSED, STATE_PLAYING
+from homeassistant.const import ATTR_DEVICE_CLASS, STATE_PAUSED, STATE_PLAYING
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.device_registry import format_mac
 
@@ -36,6 +36,13 @@ async def entity_id(
 
 def _refresh(setup_integration: MockConfigEntry) -> None:
     setup_integration.runtime_data.async_update_listeners()
+
+
+async def test_device_class(hass: HomeAssistant, entity_id: str) -> None:
+    """The media player is a speaker."""
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.attributes[ATTR_DEVICE_CLASS] == "speaker"
 
 
 async def test_play_pause_state_mapping(

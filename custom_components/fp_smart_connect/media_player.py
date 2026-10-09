@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.components.media_player import (
+    MediaPlayerDeviceClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
     MediaPlayerState,
@@ -40,6 +41,7 @@ class FpSootherMediaPlayer(FpSootherEntity, MediaPlayerEntity):
     """The Deluxe Soother's sound entity."""
 
     _attr_translation_key = "sound"
+    _attr_device_class = MediaPlayerDeviceClass.SPEAKER
     _attr_supported_features = (
         MediaPlayerEntityFeature.PLAY
         | MediaPlayerEntityFeature.PAUSE
