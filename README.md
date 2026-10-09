@@ -30,17 +30,72 @@ State updates are pushed over a persistent BLE connection (`local_push`). The in
 
 Once installed, put the Deluxe Soother into pairing mode. Home Assistant should discover it automatically via Bluetooth and prompt you to set it up; otherwise, go to **Settings → Devices & Services → Add Integration** and search for "Fisher-Price Smart Connect".
 
-## Entities
+## Supported functionality
 
-- **Sound** (media player): play/pause, volume, and the sound as its source.
-- **Night Light**, **Star Projection**, **Animal Projection** (lights): on/off and brightness. The projections expose their modes as effects.
-- **Selects**: Star Projection Speed, Animal Projection Speed, Music Timer, Light Timer, Sleep Stages, Settle Timer, Soothe Timer, Sleep Timer, and Star Color 1-3 (the colors used by the Custom star effect).
-- **Settling Playlist**, **Soothing Playlist** (sensors): the tracks selected in each playlist, also available as a `tracks` list attribute. Change them with the `set_playlist` action.
-- **Diagnostics** (disabled by default): Firmware Version, Firmware API Level, Device Error, Sound Expiring, and Light Expiring.
+### Deluxe Soother (DYW47)
 
-## Actions
+#### Media Players
 
-### `fp_smart_connect.set_playlist`
+- **Sound**: play/pause, volume, and the sound as its source.
+  - **Sources**:
+    - pink_noise
+    - brown_noise
+    - womb
+    - ocean
+    - nature
+    - wind
+    - its_raining_its_pouring
+    - aurora
+    - six_little_ducks
+    - frere_jacques
+    - brahms_lullaby
+    - somewhere
+    - daylight
+    - dreaming_dawn
+    - motions
+    - polar_wind
+
+#### Lights
+
+- **Animal Projection**: on/off, brightness, and effects.
+- **Night Light**: on/off and brightness.
+- **Star Projection**: on/off, brightness, and effects.
+
+#### Selects
+
+- **Animal Projection Speed**
+  - **Options**: slow, fast
+- **Star Projection Speed**
+  - **Options**: slow, medium, fast, very_fast
+- **Music Timer**
+  - **Options**: \<number\>_minutes, continuous
+- **Light Timer**
+  - **Options**: \<number\>_minutes, continuous
+- **Sleep Stages**
+  - **Options**: settle, soothe, sleep.
+- **Settle Timer**
+  - **Options**: \<number\>_minutes
+- **Soothe Timer**
+  - **Options**: \<number\>_minutes
+- **Sleep Timer**
+  - **Options**: \<number\>_minutes, continuous
+- **Star Color 1**, **Star Color 2**, **Star Color 3**: the colors used by the **custom** Star Projection effect
+  - **Options**: red, orange, yellow, green, blue, purple.
+
+#### Sensors
+
+- **Settling Playlist**, **Soothing Playlist**: the tracks selected in each playlist, also available as a `tracks` list attribute. Change them with the `set_playlist` action.
+
+- **Diagnostics** (disabled by default):
+  - **Firmware Version**
+  - **Firmware API Level**
+  - **Device Error**
+  - **Sound Expiring** (Binary Sensor)
+  - **Light Expiring** (Binary Sensor)
+
+### Actions
+
+#### `fp_smart_connect.set_playlist`
 
 Replaces the tracks selected in one playlist.
 
@@ -63,7 +118,7 @@ data:
     - 5 # track number (Brahms: Lullaby)
 ```
 
-### `fp_smart_connect.apply_preset`
+##### `fp_smart_connect.apply_preset`
 
 Changes several settings at once in a single write. Every field except `device_id` is optional, but at least one is required, and any field you leave out keeps its current value. Modes, speeds, timers, and colors use the same option values as the entities above, which are lowercase keys such as `ocean`, `very_fast`, `30_minutes`, or `blue` (modes also accept `off`). The display names shown in the UI also work, so `30 Minutes` and `30_minutes` mean the same thing. Brightness and volume use the device's native ranges: `volume_level` is 0-15, `animal_projection_brightness` is 0-10, `nightlight_brightness` is 0-7, and `star_projection_brightness` is 0-6. `captive_playlist_selection` (settling) and `soothe_playlist_selection` (soothing) take the same track lists as `set_playlist`. See the action's fields in **Developer tools → Actions** for the full list.
 
@@ -78,6 +133,74 @@ data:
   star_projection_sequence_mode: "off"
   light_timer: 30_minutes
 ```
+
+## Data Updates
+
+The integration does not poll. When it is set up, it opens a Bluetooth connection to the device, reads the full device state once, and keeps the connection open. After that, the device pushes a notification whenever its state changes, including changes made with its physical buttons, and Home Assistant updates the entities right away. Commands sent from Home Assistant update the entities from the state the device reports back, not from an assumed value.
+
+If the connection drops, or the device stops advertising over Bluetooth, all entities become unavailable. The integration tries to reconnect the next time Home Assistant receives a Bluetooth advertisement from the device. Once it reconnects, it reads the full state again and the entities become available.
+
+## Examples
+
+The examples below use the default entity IDs for a device named "Deluxe Soother". If you renamed the device or its entities, replace them with yours.
+
+### Start a bedtime routine
+
+Every evening, start brown noise at a low volume, dim the night light, and turn on the star projection with warm colors. All of these settings change in a single write with `apply_preset`, and the sound and lights turn off by themselves after an hour.
+
+```yaml
+automation:
+  - alias: "Nursery: bedtime"
+    triggers:
+      - trigger: time
+        at: "19:30:00"
+    actions:
+      - action: fp_smart_connect.apply_preset
+        data:
+          device_id: 0123456789abcdef0123456789abcdef
+          sound_mode: brown_noise
+          volume_level: 4
+          sound_timer_setting: 60_minutes
+          nightlight_mode: true
+          nightlight_brightness: 2
+          star_projection_sequence_mode: warm_colors
+          star_projection_brightness: 2
+          light_timer: 60_minutes
+```
+
+### Turn everything off in the morning
+
+Use the standard entity actions to stop the sound and turn off all three lights.
+
+```yaml
+automation:
+  - alias: "Nursery: morning"
+    triggers:
+      - trigger: time
+        at: "07:00:00"
+    actions:
+      - action: media_player.media_pause
+        target:
+          entity_id: media_player.deluxe_soother_sound
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.deluxe_soother_night_light
+            - light.deluxe_soother_star_projection
+            - light.deluxe_soother_animal_projection
+```
+
+## Known Limitations
+
+This integration relies on a stable Bluetooth connection to the device. If the connection is lost, the entities will become unavailable until the device is back in range and the connection is re-established. This integration does not provide the ability to update device firmware.
+
+## Troubleshooting
+
+If you encounter issues with the integration:
+
+- Ensure the device is within Bluetooth range.
+- Check the Home Assistant logs (Tools → System → Logs) for any error messages related to the integration.
+- [Enable debug logging](https://www.home-assistant.io/docs/configuration/troubleshooting/#debug-logs-and-diagnostics) for the integration in Home Assistant to gather more detailed information.
 
 ## Removal
 

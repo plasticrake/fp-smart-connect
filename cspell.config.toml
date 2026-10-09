@@ -1,6 +1,7 @@
 version = "0.2"
 language = "en"
 dictionaries = ["project-words", "bash", "python"]
+ignorePaths = ["node_modules/", "pnpm-lock.yaml"]
 
 [[dictionaryDefinitions]]
 name = "project-words"
