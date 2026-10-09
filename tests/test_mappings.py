@@ -9,6 +9,7 @@ from custom_components.fp_smart_connect.mappings import (
     EnumMapping,
     PlaylistMapping,
     UnknownTracksError,
+    normalize_option,
     scale_from_ha_brightness,
     scale_to_ha_brightness,
     volume_from_ha,
@@ -44,36 +45,43 @@ def test_volume_round_trip_boundaries() -> None:
     assert volume_from_ha(1.0) == 15
 
 
-def test_enum_mapping_known_and_fallback_labels() -> None:
-    """Known values map to their labels; unknown values get a generic fallback."""
-    mapping = EnumMapping.from_source({"slow": 0, "fast": 1}, fallback_prefix="Speed")
+def test_enum_mapping_known_and_fallback_options() -> None:
+    """Known values map to their options; unknown values get a generic fallback."""
+    mapping = EnumMapping({"slow": 0, "fast": 1}, fallback_prefix="speed")
 
-    assert mapping.label_for(0) == "Slow"
-    assert mapping.label_for(1) == "Fast"
-    assert mapping.label_for(9) == "Speed 9"
-    assert mapping.raw_for("Slow") == 0
-    assert mapping.raw_for("Speed 9") == 9
-    assert mapping.raw_for("Speed nine") is None
+    assert mapping.option_for(0) == "slow"
+    assert mapping.option_for(1) == "fast"
+    assert mapping.option_for(9) == "speed_9"
+    assert mapping.raw_for("slow") == 0
+    assert mapping.raw_for("speed_9") == 9
+    assert mapping.raw_for("speed_nine") is None
+    assert mapping.raw_for("Slow") is None
     assert mapping.raw_for("nonsense") is None
-
-
-def test_enum_mapping_overrides() -> None:
-    """Overrides replace the auto-title-cased label for a given source key."""
-    mapping = EnumMapping.from_source(
-        {"its_raining": 1},
-        fallback_prefix="Mode",
-        overrides={"its_raining": "It's Raining"},
-    )
-    assert mapping.label_for(1) == "It's Raining"
-    assert mapping.raw_for("It's Raining") == 1
 
 
 def test_enum_mapping_options_for_includes_fallback_only_when_needed() -> None:
     """options_for() keeps current_option a member of options without inflating the list."""
-    mapping = EnumMapping.from_source({"slow": 0, "fast": 1}, fallback_prefix="Speed")
+    mapping = EnumMapping({"slow": 0, "fast": 1}, fallback_prefix="speed")
 
-    assert mapping.options_for(0) == ["Slow", "Fast"]
-    assert mapping.options_for(9) == ["Slow", "Fast", "Speed 9"]
+    assert mapping.options_for(0) == ["slow", "fast"]
+    assert mapping.options_for(9) == ["slow", "fast", "speed_9"]
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("very_fast", "very_fast"),
+        ("Very Fast", "very_fast"),
+        ("10 Minutes", "10_minutes"),
+        ("Brahms: Lullaby", "brahms_lullaby"),
+        ("It's Raining, It's Pouring", "its_raining_its_pouring"),
+        ("It\u2019s Raining", "its_raining"),
+        ("  Off  ", "off"),
+    ],
+)
+def test_normalize_option(value: str, expected: str) -> None:
+    """Display names normalize to option form, and options pass through."""
+    assert normalize_option(value) == expected
 
 
 @pytest.mark.parametrize("native_max", [7, 15])
@@ -107,14 +115,14 @@ def test_out_of_range_values_are_clamped() -> None:
 
 
 def test_enum_mapping_with_off() -> None:
-    """with_off() adds an "Off" label for 0 without touching the original."""
-    mapping = EnumMapping.from_source({"on": 1}, fallback_prefix="Mode")
+    """with_off() adds an "off" option for 0 without touching the original."""
+    mapping = EnumMapping({"on": 1}, fallback_prefix="mode")
 
     with_off = mapping.with_off()
 
-    assert with_off.label_to_raw == {"Off": 0, "On": 1}
-    assert with_off.label_for(0) == "Off"
-    assert mapping.label_for(0) == "Mode 0"
+    assert with_off.option_to_raw == {"off": 0, "on": 1}
+    assert with_off.option_for(0) == "off"
+    assert mapping.option_for(0) == "mode_0"
 
 
 PLAYLIST = PlaylistMapping.from_source(
@@ -143,6 +151,7 @@ def test_playlist_labels_for(mask: int, expected: list[str]) -> None:
         ("First", 1),
         ("third!", 4),
         ("  SECOND ", 2),
+        ("third", 4),
         (1, 1),
         (3, 4),
         ("2", 2),

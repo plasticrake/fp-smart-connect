@@ -30,6 +30,7 @@ from .mappings import (
     EnumMapping,
     PlaylistMapping,
     UnknownTracksError,
+    normalize_option,
 )
 
 if TYPE_CHECKING:
@@ -92,9 +93,19 @@ def _playlist_tracks(mapping: PlaylistMapping) -> Callable[[Any], int]:
     return validate
 
 
-def _label(mapping: EnumMapping) -> vol.All:
-    """Validate a known label, returning its raw device value."""
-    return vol.All(vol.In(list(mapping.label_to_raw)), mapping.label_to_raw.__getitem__)
+def _option(mapping: EnumMapping) -> vol.All:
+    """
+    Validate a known option or its English display name, returning its raw value.
+
+    Display names are accepted via normalize_option(), so "10 Minutes",
+    "10 minutes", and "10_minutes" are all the same value.
+    """
+    return vol.All(
+        cv.string,
+        normalize_option,
+        vol.In(list(mapping.option_to_raw)),
+        mapping.option_to_raw.__getitem__,
+    )
 
 
 def _level(native_max: int) -> vol.All:
@@ -115,7 +126,9 @@ SET_PLAYLIST_SCHEMA = vol.All(
     vol.Schema(
         {
             vol.Required(ATTR_DEVICE_ID): cv.string,
-            vol.Required(ATTR_PLAYLIST): vol.In(list(PLAYLISTS)),
+            vol.Required(ATTR_PLAYLIST): vol.All(
+                cv.string, normalize_option, vol.In(list(PLAYLISTS))
+            ),
             vol.Required(ATTR_TRACKS): _TRACK_LIST,
         }
     ),
@@ -123,31 +136,33 @@ SET_PLAYLIST_SCHEMA = vol.All(
 )
 
 # The attributes fp_soother_lib's send_preset() bundles (PRESET_ATTRS), keyed
-# by their SootherState field names. Enum-like fields accept the same labels
-# as the matching light/media_player/select/sensor entities; levels use the
-# device's native ranges. Mode fields where 0 means off also accept "Off".
+# by their SootherState field names. Enum-like fields accept the same options
+# as the matching light/media_player/select entities, and playlist fields the
+# same track names as the playlist sensors. Enum fields also accept the
+# options' English display names (e.g. "Very Fast"). Levels use the device's
+# native ranges. Mode fields where 0 means off also accept "off".
 PRESET_FIELDS: dict[str, Any] = {
     "play_mode": _FLAG,
-    "sound_mode": _label(SOUND_MODE_MAP.with_off()),
+    "sound_mode": _option(SOUND_MODE_MAP.with_off()),
     "volume_level": _level(VOLUME_MAX),
-    "animal_projection_mode": _label(ANIMAL_PROJECTION_EFFECT_MAP.with_off()),
+    "animal_projection_mode": _option(ANIMAL_PROJECTION_EFFECT_MAP.with_off()),
     "animal_projection_brightness": _level(ANIMAL_PROJECTION_BRIGHTNESS_MAX),
-    "animal_projection_speed": _label(ANIMAL_PROJECTION_SPEED_MAP),
-    "star_projection_sequence_mode": _label(STAR_PROJECTION_EFFECT_MAP.with_off()),
-    "star_projection_custom_color0": _label(CUSTOM_COLOR_MAP),
-    "star_projection_custom_color1": _label(CUSTOM_COLOR_MAP),
-    "star_projection_custom_color2": _label(CUSTOM_COLOR_MAP),
+    "animal_projection_speed": _option(ANIMAL_PROJECTION_SPEED_MAP),
+    "star_projection_sequence_mode": _option(STAR_PROJECTION_EFFECT_MAP.with_off()),
+    "star_projection_custom_color0": _option(CUSTOM_COLOR_MAP),
+    "star_projection_custom_color1": _option(CUSTOM_COLOR_MAP),
+    "star_projection_custom_color2": _option(CUSTOM_COLOR_MAP),
     "star_projection_brightness": _level(STAR_PROJECTION_BRIGHTNESS_MAX),
-    "star_projection_speed": _label(STAR_PROJECTION_SPEED_MAP),
+    "star_projection_speed": _option(STAR_PROJECTION_SPEED_MAP),
     "nightlight_mode": _FLAG,
     "nightlight_brightness": _level(NIGHTLIGHT_BRIGHTNESS_MAX),
-    "sleep_stages_mode": _label(SLEEP_STAGES_MODE_MAP),
+    "sleep_stages_mode": _option(SLEEP_STAGES_MODE_MAP),
     "captive_playlist_selection": _playlist_tracks(SETTLING_PLAYLIST_MAP),
     "soothe_playlist_selection": _playlist_tracks(SOOTHING_PLAYLIST_MAP),
-    "sound_timer_setting": _label(TIMER_DURATION_MAP),
-    "light_timer": _label(TIMER_DURATION_MAP),
-    "previous_animal_projection_mode": _label(ANIMAL_PROJECTION_EFFECT_MAP.with_off()),
-    "previous_star_projection_sequence_mode": _label(
+    "sound_timer_setting": _option(TIMER_DURATION_MAP),
+    "light_timer": _option(TIMER_DURATION_MAP),
+    "previous_animal_projection_mode": _option(ANIMAL_PROJECTION_EFFECT_MAP.with_off()),
+    "previous_star_projection_sequence_mode": _option(
         STAR_PROJECTION_EFFECT_MAP.with_off()
     ),
 }

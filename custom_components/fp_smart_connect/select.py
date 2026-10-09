@@ -169,14 +169,14 @@ class FpSootherSelect(FpSootherEntity, SelectEntity):
         raw = getattr(self._state, self.entity_description.state_attr)
         if raw is None:
             return None
-        return self.entity_description.value_map.label_for(raw)
+        return self.entity_description.value_map.option_for(raw)
 
     @property
     def options(self) -> list[str]:
         """Return the list of available options."""
         raw = getattr(self._state, self.entity_description.state_attr)
         if raw is None:
-            return list(self.entity_description.value_map.label_to_raw)
+            return list(self.entity_description.value_map.option_to_raw)
         return self.entity_description.value_map.options_for(raw)
 
     async def async_select_option(self, option: str) -> None:

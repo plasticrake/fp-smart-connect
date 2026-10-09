@@ -45,6 +45,7 @@ from custom_components.fp_smart_connect.mappings import (
     SOUND_MODE_MAP,
     EnumMapping,
     PlaylistMapping,
+    normalize_option,
 )
 from custom_components.fp_smart_connect.select import (
     SELECT_DESCRIPTIONS,
@@ -121,9 +122,12 @@ def test_preset_fields_match_library() -> None:
 def test_playlist_mapping_is_lossless(
     mapping: PlaylistMapping, source: dict[str, int]
 ) -> None:
-    """Every library track keeps its own label and bit."""
+    """Every library track keeps its own label and bit, and its label normalizes to its key."""
     assert len(mapping.label_to_bit) == len(source)
     assert set(mapping.bit_to_label) == set(source.values())
+    assert {
+        normalize_option(label): bit for label, bit in mapping.label_to_bit.items()
+    } == source
 
 
 @pytest.mark.parametrize("description", LIGHT_DESCRIPTIONS, ids=lambda d: d.key)
@@ -160,26 +164,13 @@ async def test_light_description_matches_library(
 def test_mapping_is_lossless(
     mapping: EnumMapping | None, source: dict[str, int]
 ) -> None:
-    """No two source entries collapse into one label or one raw value."""
+    """No two source entries collapse into one option or one raw value."""
     assert mapping is not None
-    assert len(mapping.label_to_raw) == len(source)
-    assert len(mapping.raw_to_label) == len(source)
-    assert set(mapping.raw_to_label) == set(source.values())
+    assert len(mapping.option_to_raw) == len(source)
+    assert len(mapping.raw_to_option) == len(source)
+    assert set(mapping.raw_to_option) == set(source.values())
 
 
 def test_select_sources_cover_every_description() -> None:
     """SELECT_SOURCES stays in step with SELECT_DESCRIPTIONS."""
     assert set(SELECT_SOURCES) == {d.key for d in SELECT_DESCRIPTIONS}
-
-
-@pytest.mark.parametrize(
-    ("key", "label"),
-    [
-        ("its_raining_its_pouring", "It's Raining, It's Pouring"),
-        ("brahms_lullaby", "Brahms: Lullaby"),
-    ],
-)
-def test_sound_label_overrides_apply(key: str, label: str) -> None:
-    """Overridden sound labels still match a real SOUND_MODES key."""
-    assert key in SOUND_MODES
-    assert SOUND_MODE_MAP.label_for(SOUND_MODES[key]) == label

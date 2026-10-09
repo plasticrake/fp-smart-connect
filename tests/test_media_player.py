@@ -84,37 +84,37 @@ async def test_volume_mapping(
     assert state.attributes["volume_level"] == pytest.approx(0.0)
 
 
-async def test_known_source_label(
+async def test_known_source_option(
     hass: HomeAssistant,
     setup_integration: MockConfigEntry,
     entity_id: str,
     mock_client: MagicMock,
 ) -> None:
-    """A known sound_mode value maps to its documented label."""
+    """A known sound_mode value maps to its library option."""
     mock_client.state.sound_mode = 1
     _refresh(setup_integration)
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state is not None
-    assert state.attributes["source"] == "Pink Noise"
-    assert "Pink Noise" in state.attributes["source_list"]
+    assert state.attributes["source"] == "pink_noise"
+    assert "pink_noise" in state.attributes["source_list"]
 
 
-async def test_unmapped_source_fallback_label(
+async def test_unmapped_source_fallback_option(
     hass: HomeAssistant,
     setup_integration: MockConfigEntry,
     entity_id: str,
     mock_client: MagicMock,
 ) -> None:
     """An unmapped, non-zero sound_mode value falls back to a generic
-    label, never dropped."""
+    option, never dropped."""
     mock_client.state.sound_mode = 17
     _refresh(setup_integration)
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state is not None
-    assert state.attributes["source"] == "Mode 17"
-    assert "Mode 17" in state.attributes["source_list"]
+    assert state.attributes["source"] == "mode_17"
+    assert "mode_17" in state.attributes["source_list"]
 
 
 async def test_paused_has_no_source(
@@ -132,7 +132,7 @@ async def test_paused_has_no_source(
     state = hass.states.get(entity_id)
     assert state is not None
     assert "source" not in state.attributes or state.attributes["source"] is None
-    assert "Mode 0" not in state.attributes["source_list"]
+    assert "mode_0" not in state.attributes["source_list"]
 
 
 async def test_play_pause_delegation(
@@ -190,7 +190,7 @@ async def test_select_source_delegation(
     await hass.services.async_call(
         "media_player",
         "select_source",
-        {"entity_id": entity_id, "source": "Ocean"},
+        {"entity_id": entity_id, "source": "ocean"},
         blocking=True,
     )
     mock_client.set_sound_mode.assert_awaited_once_with(4)
@@ -204,7 +204,7 @@ async def test_select_source_unknown_source_is_rejected(
         await hass.services.async_call(
             "media_player",
             "select_source",
-            {"entity_id": entity_id, "source": "Not A Real Sound"},
+            {"entity_id": entity_id, "source": "not_a_real_sound"},
             blocking=True,
         )
     mock_client.set_sound_mode.assert_not_called()

@@ -77,25 +77,25 @@ async def test_known_and_fallback_option_mapping(
 ) -> None:
     """current_option and options handle both known and unknown raw values."""
     entity_id = _entity_id_for(entity_registry, description.key)
-    known_label, known_raw = next(iter(description.value_map.label_to_raw.items()))
+    known_option, known_raw = next(iter(description.value_map.option_to_raw.items()))
 
     setattr(mock_client.state, description.state_attr, known_raw)
     _refresh(setup_integration)
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state is not None
-    assert state.state == known_label
-    assert known_label in state.attributes["options"]
+    assert state.state == known_option
+    assert known_option in state.attributes["options"]
 
-    unknown_raw = max(description.value_map.raw_to_label) + 100
+    unknown_raw = max(description.value_map.raw_to_option) + 100
     setattr(mock_client.state, description.state_attr, unknown_raw)
     _refresh(setup_integration)
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state is not None
-    fallback_label = description.value_map.label_for(unknown_raw)
-    assert state.state == fallback_label
-    assert fallback_label in state.attributes["options"]
+    fallback_option = description.value_map.option_for(unknown_raw)
+    assert state.state == fallback_option
+    assert fallback_option in state.attributes["options"]
 
 
 @pytest.mark.parametrize("description", SELECT_DESCRIPTIONS, ids=lambda d: d.key)
@@ -108,12 +108,12 @@ async def test_select_option_delegation(
 ) -> None:
     """Selecting a known option calls the right client method with the right value."""
     entity_id = _entity_id_for(entity_registry, description.key)
-    label, raw = next(iter(description.value_map.label_to_raw.items()))
+    option, raw = next(iter(description.value_map.option_to_raw.items()))
 
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": entity_id, "option": label},
+        {"entity_id": entity_id, "option": option},
         blocking=True,
     )
     _assert_sent(mock_client, description, raw)
@@ -127,18 +127,18 @@ async def test_reselecting_fallback_option_round_trips(
     entity_registry: er.EntityRegistry,
     description,
 ) -> None:
-    """Re-selecting the current, unmapped raw value's fallback label sends that raw value back."""
+    """Re-selecting the current, unmapped raw value's fallback option sends that raw value back."""
     entity_id = _entity_id_for(entity_registry, description.key)
-    unknown_raw = max(description.value_map.raw_to_label) + 100
+    unknown_raw = max(description.value_map.raw_to_option) + 100
     setattr(mock_client.state, description.state_attr, unknown_raw)
     _refresh(setup_integration)
     await hass.async_block_till_done()
-    fallback_label = description.value_map.label_for(unknown_raw)
+    fallback_option = description.value_map.option_for(unknown_raw)
 
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": entity_id, "option": fallback_label},
+        {"entity_id": entity_id, "option": fallback_option},
         blocking=True,
     )
     _assert_sent(mock_client, description, unknown_raw)
@@ -189,13 +189,13 @@ async def test_star_color_resends_other_slots(
     entity_id = _entity_id_for(entity_registry, "star_color_2")
     state = hass.states.get(entity_id)
     assert state is not None
-    assert state.state == "Orange"
+    assert state.state == "orange"
     assert state.name == "Deluxe Soother Star Color 2"
 
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": entity_id, "option": "Blue"},
+        {"entity_id": entity_id, "option": "blue"},
         blocking=True,
     )
 

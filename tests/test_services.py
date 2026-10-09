@@ -68,6 +68,13 @@ async def _call(hass: HomeAssistant, service: str, data: dict[str, Any]) -> None
         ),
         ("settling", "aurora", "set_captive_playlist_selection", 0b00010),
         ("soothing", [1, "3", "Polar Wind"], "set_soothe_playlist_selection", 0b10101),
+        (
+            "Settling",
+            ["its_raining_its_pouring", "brahms lullaby", "SIX LITTLE DUCKS"],
+            "set_captive_playlist_selection",
+            0b10101,
+        ),
+        ("soothing", ["dreaming_dawn"], "set_soothe_playlist_selection", 0b00100),
     ],
 )
 async def test_set_playlist(
@@ -79,7 +86,7 @@ async def test_set_playlist(
     method: str,
     mask: int,
 ) -> None:
-    """Track names and numbers resolve to the playlist's bitmask."""
+    """Track names (in any case, or as keys) and numbers resolve to the bitmask."""
     await _call(hass, "set_playlist", {"playlist": playlist, "tracks": tracks})
 
     getattr(mock_client, method).assert_awaited_once_with(mask)
@@ -94,6 +101,7 @@ async def test_set_playlist(
         ("soothing", [0]),
         ("soothing", []),
         ("bedtime", ["Aurora"]),
+        ("settling", ["somewhere"]),
     ],
 )
 async def test_set_playlist_rejects_invalid_tracks(
@@ -192,18 +200,18 @@ async def test_apply_preset(
     setup_integration: MockConfigEntry,
     mock_client: MagicMock,
 ) -> None:
-    """Labels resolve to raw values, and only the given fields are sent."""
+    """Options resolve to raw values, and only the given fields are sent."""
     await _call(
         hass,
         "apply_preset",
         {
-            "sound_mode": "Ocean",
+            "sound_mode": "ocean",
             "volume_level": 8,
             "nightlight_mode": True,
-            "star_projection_sequence_mode": "Off",
-            "star_projection_custom_color1": "Blue",
+            "star_projection_sequence_mode": "off",
+            "star_projection_custom_color1": "blue",
             "captive_playlist_selection": ["Aurora", 1],
-            "light_timer": "Continuous",
+            "light_timer": "continuous",
         },
     )
 
@@ -218,17 +226,48 @@ async def test_apply_preset(
     )
 
 
+async def test_apply_preset_accepts_display_names(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_client: MagicMock,
+) -> None:
+    """Display names, in any case, mix freely with options."""
+    await _call(
+        hass,
+        "apply_preset",
+        {
+            "sound_mode": "It's Raining, It's Pouring",
+            "star_projection_sequence_mode": "Cool Colors",
+            "star_projection_speed": "very fast",
+            "star_projection_custom_color0": "Off",
+            "light_timer": "30 Minutes",
+            "sound_timer_setting": "continuous",
+        },
+    )
+
+    mock_client.send_preset.assert_awaited_once_with(
+        sound_mode=7,
+        star_projection_sequence_mode=2,
+        star_projection_speed=3,
+        star_projection_custom_color0=0,
+        light_timer=5,
+        sound_timer_setting=15,
+    )
+
+
 @pytest.mark.parametrize(
     "data",
     [
         {},
-        {"sound_mode": "Mode 20"},
+        {"sound_mode": "mode_20"},
         {"sound_mode": 4},
         {"volume_level": 16},
         {"nightlight_brightness": -1},
-        {"animal_projection_speed": "Very Fast"},
+        {"animal_projection_speed": "very_fast"},
         {"soothe_playlist_selection": ["Aurora"]},
-        {"captive_sleep_stage_timer": "5 Minutes"},
+        {"captive_sleep_stage_timer": "5_minutes"},
+        {"sound_mode": "Mode 20"},
+        {"sound_mode": "Ocean Waves"},
     ],
 )
 async def test_apply_preset_rejects_invalid_data(
@@ -247,37 +286,37 @@ async def test_apply_preset_rejects_invalid_data(
 @pytest.mark.parametrize(
     ("field", "expected"),
     [
-        ("sound_mode", list(SOUND_MODE_MAP.with_off().label_to_raw)),
+        ("sound_mode", list(SOUND_MODE_MAP.with_off().option_to_raw)),
         (
             "animal_projection_mode",
-            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().option_to_raw),
         ),
-        ("animal_projection_speed", list(ANIMAL_PROJECTION_SPEED_MAP.label_to_raw)),
+        ("animal_projection_speed", list(ANIMAL_PROJECTION_SPEED_MAP.option_to_raw)),
         (
             "star_projection_sequence_mode",
-            list(STAR_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+            list(STAR_PROJECTION_EFFECT_MAP.with_off().option_to_raw),
         ),
-        ("star_projection_custom_color0", list(CUSTOM_COLOR_MAP.label_to_raw)),
-        ("star_projection_custom_color1", list(CUSTOM_COLOR_MAP.label_to_raw)),
-        ("star_projection_custom_color2", list(CUSTOM_COLOR_MAP.label_to_raw)),
-        ("star_projection_speed", list(STAR_PROJECTION_SPEED_MAP.label_to_raw)),
-        ("sleep_stages_mode", list(SLEEP_STAGES_MODE_MAP.label_to_raw)),
+        ("star_projection_custom_color0", list(CUSTOM_COLOR_MAP.option_to_raw)),
+        ("star_projection_custom_color1", list(CUSTOM_COLOR_MAP.option_to_raw)),
+        ("star_projection_custom_color2", list(CUSTOM_COLOR_MAP.option_to_raw)),
+        ("star_projection_speed", list(STAR_PROJECTION_SPEED_MAP.option_to_raw)),
+        ("sleep_stages_mode", list(SLEEP_STAGES_MODE_MAP.option_to_raw)),
         ("captive_playlist_selection", list(SETTLING_PLAYLIST_MAP.label_to_bit)),
         ("soothe_playlist_selection", list(SOOTHING_PLAYLIST_MAP.label_to_bit)),
-        ("sound_timer_setting", list(TIMER_DURATION_MAP.label_to_raw)),
-        ("light_timer", list(TIMER_DURATION_MAP.label_to_raw)),
+        ("sound_timer_setting", list(TIMER_DURATION_MAP.option_to_raw)),
+        ("light_timer", list(TIMER_DURATION_MAP.option_to_raw)),
         (
             "previous_animal_projection_mode",
-            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+            list(ANIMAL_PROJECTION_EFFECT_MAP.with_off().option_to_raw),
         ),
         (
             "previous_star_projection_sequence_mode",
-            list(STAR_PROJECTION_EFFECT_MAP.with_off().label_to_raw),
+            list(STAR_PROJECTION_EFFECT_MAP.with_off().option_to_raw),
         ),
     ],
 )
 def test_services_yaml_options_match_mappings(field: str, expected: list[str]) -> None:
-    """The UI's option lists match the labels the schema accepts."""
+    """The UI's option lists match the options the schema accepts."""
     assert _yaml_options("apply_preset", field) == expected
 
 
