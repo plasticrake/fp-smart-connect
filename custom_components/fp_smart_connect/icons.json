@@ -19,30 +19,68 @@
         "default": "mdi:star-shooting",
         "state": {
           "off": "mdi:star-shooting-outline"
+        },
+        "state_attributes": {
+          "effect": {
+            "default": "mdi:star-shooting",
+            "state": {
+              "rainbow": "mdi:looks",
+              "cool_colors": "mdi:snowflake",
+              "warm_colors": "mdi:fire",
+              "custom": "mdi:palette"
+            }
+          }
         }
       },
       "animal_projection": {
         "default": "mdi:paw",
         "state": {
           "off": "mdi:paw-outline"
+        },
+        "state_attributes": {
+          "effect": {
+            "default": "mdi:elephant",
+            "state": {
+              "lighthouse": "mdi:lighthouse",
+              "candle": "mdi:candle"
+            }
+          }
         }
       }
     },
     "select": {
       "star_projection_speed": {
-        "default": "mdi:speedometer"
+        "default": "mdi:speedometer",
+        "state": {
+          "slow": "mdi:speedometer-slow",
+          "normal": "mdi:speedometer-medium"
+        }
       },
       "animal_projection_speed": {
-        "default": "mdi:speedometer"
+        "default": "mdi:speedometer",
+        "state": {
+          "slow": "mdi:speedometer-slow"
+        }
       },
       "music_timer": {
-        "default": "mdi:timer-music-outline"
+        "default": "mdi:timer-music-outline",
+        "state": {
+          "continuous": "mdi:infinity"
+        }
       },
       "light_timer": {
-        "default": "mdi:timer-outline"
+        "default": "mdi:timer-outline",
+        "state": {
+          "continuous": "mdi:infinity"
+        }
       },
       "sleep_stages": {
-        "default": "mdi:sleep"
+        "default": "mdi:sleep",
+        "state": {
+          "off": "mdi:sleep-off",
+          "settle": "mdi:weather-sunset-down",
+          "soothe": "mdi:weather-night"
+        }
       },
       "settle_timer": {
         "default": "mdi:timer-outline"
@@ -51,10 +89,16 @@
         "default": "mdi:timer-outline"
       },
       "sleep_timer": {
-        "default": "mdi:bed-clock"
+        "default": "mdi:bed-clock",
+        "state": {
+          "continuous": "mdi:infinity"
+        }
       },
       "star_color": {
-        "default": "mdi:palette"
+        "default": "mdi:palette",
+        "state": {
+          "off": "mdi:palette-outline"
+        }
       }
     },
     "sensor": {
