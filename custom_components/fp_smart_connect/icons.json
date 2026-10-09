@@ -1,0 +1,100 @@
+{
+  "entity": {
+    "media_player": {
+      "sound": {
+        "default": "mdi:music-box-outline",
+        "state": {
+          "playing": "mdi:music-box"
+        }
+      }
+    },
+    "light": {
+      "nightlight": {
+        "default": "mdi:lightbulb-night",
+        "state": {
+          "off": "mdi:lightbulb-night-outline"
+        }
+      },
+      "star_projection": {
+        "default": "mdi:star-shooting",
+        "state": {
+          "off": "mdi:star-shooting-outline"
+        }
+      },
+      "animal_projection": {
+        "default": "mdi:paw",
+        "state": {
+          "off": "mdi:paw-outline"
+        }
+      }
+    },
+    "select": {
+      "star_projection_speed": {
+        "default": "mdi:speedometer"
+      },
+      "animal_projection_speed": {
+        "default": "mdi:speedometer"
+      },
+      "music_timer": {
+        "default": "mdi:timer-music-outline"
+      },
+      "light_timer": {
+        "default": "mdi:timer-outline"
+      },
+      "sleep_stages": {
+        "default": "mdi:sleep"
+      },
+      "settle_timer": {
+        "default": "mdi:timer-outline"
+      },
+      "soothe_timer": {
+        "default": "mdi:timer-outline"
+      },
+      "sleep_timer": {
+        "default": "mdi:bed-clock"
+      },
+      "star_color": {
+        "default": "mdi:palette"
+      }
+    },
+    "sensor": {
+      "settling_playlist": {
+        "default": "mdi:playlist-music"
+      },
+      "soothing_playlist": {
+        "default": "mdi:playlist-music"
+      },
+      "firmware_version": {
+        "default": "mdi:chip"
+      },
+      "firmware_api_level": {
+        "default": "mdi:numeric"
+      },
+      "device_error": {
+        "default": "mdi:alert-circle-outline"
+      }
+    },
+    "binary_sensor": {
+      "sound_expiring": {
+        "default": "mdi:timer-sand",
+        "state": {
+          "off": "mdi:timer-sand-complete"
+        }
+      },
+      "light_expiring": {
+        "default": "mdi:timer-sand",
+        "state": {
+          "off": "mdi:timer-sand-complete"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_playlist": {
+      "service": "mdi:playlist-edit"
+    },
+    "apply_preset": {
+      "service": "mdi:playlist-music"
+    }
+  }
+}
