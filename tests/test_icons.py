@@ -11,8 +11,14 @@ import pytest
 import yaml
 
 from custom_components.fp_smart_connect import const
-from custom_components.fp_smart_connect.light import LIGHT_DESCRIPTIONS
-from custom_components.fp_smart_connect.select import SELECT_DESCRIPTIONS
+from custom_components.fp_smart_connect.light import (
+    LIGHT_DESCRIPTIONS,
+    FpSootherLightDescription,
+)
+from custom_components.fp_smart_connect.select import (
+    SELECT_DESCRIPTIONS,
+    FpSootherSelectDescription,
+)
 
 COMPONENT_DIR = Path(const.__file__).parent
 ICONS = json.loads((COMPONENT_DIR / "icons.json").read_text(encoding="utf-8"))
@@ -46,12 +52,18 @@ def _icon_sections() -> list[dict[str, Any]]:
     return sections
 
 
+def test_every_icon_section_has_a_default() -> None:
+    """Every entity and state attribute icon section declares a default icon."""
+    for section in _icon_sections():
+        assert "default" in section
+
+
 def test_icons_are_mdi() -> None:
-    """Every icon value names a Material Design Icon."""
+    """Every icon value names a Material Design Icon (starts with "mdi:")."""
     entity_icons = [
         icon
         for section in _icon_sections()
-        for icon in [section.get("default", "mdi:"), *section.get("state", {}).values()]
+        for icon in [section["default"], *section.get("state", {}).values()]
     ]
     service_icons = [entry["service"] for entry in ICONS["services"].values()]
     for icon in entity_icons + service_icons:
@@ -72,7 +84,9 @@ def test_state_icons_follow_hassfest_rules() -> None:
 
 
 @pytest.mark.parametrize("description", SELECT_DESCRIPTIONS, ids=lambda d: d.key)
-def test_select_state_icons_name_real_options(description) -> None:
+def test_select_state_icons_name_real_options(
+    description: FpSootherSelectDescription,
+) -> None:
     """Select state icons are keyed by options the select actually offers."""
     states = ICONS["entity"]["select"][description.translation_key].get("state", {})
     assert set(states) <= set(description.value_map.option_to_raw)
@@ -83,10 +97,11 @@ def test_select_state_icons_name_real_options(description) -> None:
     [d for d in LIGHT_DESCRIPTIONS if d.effect_map is not None],
     ids=lambda d: d.key,
 )
-def test_effect_icons_name_real_effects(description) -> None:
+def test_effect_icons_name_real_effects(
+    description: FpSootherLightDescription,
+) -> None:
     """Light effect icons are keyed by effects the light actually offers."""
     assert description.effect_map is not None
     entry = ICONS["entity"]["light"][description.translation_key]
-    effect = entry.get("state_attributes", {}).get("effect", {})
-    states = effect.get("state", {})
+    states = entry["state_attributes"]["effect"]["state"]
     assert set(states) <= set(description.effect_map.option_to_raw)
